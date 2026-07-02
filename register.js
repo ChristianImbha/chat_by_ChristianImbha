@@ -19,3 +19,19 @@ document.querySelectorAll('.btn-toggle-password').forEach(button => {
     }
   });
 });
+
+// Interception de l'événement de soumission du formulaire
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault(); // Empêche le rechargement natif de la page HTML
+
+  // Récupération et nettoyage des valeurs saisies par l'utilisateur
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  // Validation locale : vérification de la correspondance des mots de passe
+  if (password !== confirmPassword) {
+    alert("Erreur : Les mots de passe ne correspondent pas !");
+    return; // Arrête immédiatement l'exécution du script
+  }
