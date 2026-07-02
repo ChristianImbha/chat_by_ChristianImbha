@@ -35,3 +35,37 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     alert("Erreur : Les mots de passe ne correspondent pas !");
     return; // Arrête immédiatement l'exécution du script
   }
+
+  // Préparation des données au format attendu par le backend
+  const payload = {
+    username: fullName, // Assure-toi que la clé correspond exactement aux attentes de ton API
+    email: email,
+    password: password
+  };
+
+  try {
+    // Envoi de la requête HTTP asynchrone à l'API REST
+    const response = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json" // Indique au serveur qu'on lui envoie du JSON
+      },
+      body: JSON.stringify(payload) // Convertit l'objet JavaScript en chaîne JSON
+    });
+
+    const data = await response.json(); // Analyse de la réponse JSON du serveur
+
+    if (response.ok) {
+      alert("Inscription réussie ! Redirection vers la page de connexion...");
+      window.location.href = 'login.html'; // Redirection de l'utilisateur
+    } else {
+      // Si le serveur renvoie une erreur (ex: email déjà utilisé)
+      alert(`Erreur d'inscription : ${data.message || 'Une erreur est survenue'}`);
+    }
+
+  } catch (error) {
+    // Gestion des erreurs réseau (ex: serveur local éteint)
+    console.error("Erreur réseau :", error);
+    alert("Impossible de joindre le serveur. Veuillez vérifier votre connexion.");
+  }
+}); // Fermeture de l'écouteur d'événement submit du Bloc 2
