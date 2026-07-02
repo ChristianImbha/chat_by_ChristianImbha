@@ -1,5 +1,6 @@
-// URL de base de ton API REST locale (fournie par le cahier des charges)
+// BLOC 1 : Configuration globale
 const API_URL = "https://kadea-chat-api.onrender.com";
+const Workspace_API_KEY = "wksp_c3e1fb2ba091b7e4a9697b611e1d7168";
 
 // Gestion de la visibilité des mots de passe (icône de l'œil)
 document.querySelectorAll('.btn-toggle-password').forEach(button => {
@@ -20,7 +21,7 @@ document.querySelectorAll('.btn-toggle-password').forEach(button => {
   });
 });
 
-// Interception de l'événement de soumission du formulaire
+// BLOC 2 : Interception de l'événement de soumission du formulaire
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
   e.preventDefault(); // Empêche le rechargement natif de la page HTML
 
@@ -31,18 +32,19 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const confirmPassword = document.getElementById('confirmPassword').value;
 
   // Validation locale : vérification de la correspondance des mots de passe
-  
   if (password !== confirmPassword) {
     alert("Erreur : Les mots de passe ne correspondent pas !");
     return; // Arrête immédiatement l'exécution du script
   }
+  
+  // Validation locale : présence d'un caractère spécial
   const specialCharRegex = /[!@#$%^&*(),.?:{}|<>]/;
-  if(!specialCharRegex.test(password)){
+  if (!specialCharRegex.test(password)) {
     alert("⚠️ Sécurité : Votre mot de passe doit contenir au moins un caractère spécial (ex: @, !, $, etc.).");
-    return; // Bloque la soumission si le caractère spécial est absent)
-  };
+    return; // Bloque la soumission si le caractère spécial est absent
+  }
 
-  // Préparation des données au format attendu par le backend
+  // BLOC 3 : Préparation des données au format attendu par le backend
   const payload = {
     username: fullName, 
     email: email,
@@ -50,27 +52,27 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   };
 
   try {
-    // Envoi de la requête HTTP asynchrone à l'API REST
-    const response = await fetch(`${API_URL}/register`, {
+    // CORRECTION ICI : Remplacement de /register par /auth/register
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json" // Indique au serveur qu'on lui envoie du JSON
+        "Content-Type": "application/json", // Indique au serveur qu'on lui envoie du JSON
+        "x-api-key": Workspace_API_KEY      // Utilisation dynamique de la variable déclarée en haut
       },
       body: JSON.stringify(payload) // Convertit l'objet JavaScript en chaîne JSON
     });
 
     const data = await response.json(); // Analyse de la réponse JSON du serveur
 
-   if (response.ok) {
+    if (response.ok) {
       alert("🎉 Félicitations ! Votre compte Kadea Chat a été créé avec succès. Redirection vers la page de connexion...");
       window.location.href = 'login.html'; 
     } else {
       alert(`❌ Échec de l'inscription : ${data.message || 'Une erreur est survenue'}`);
     }  
 
-
   } catch (error) {
-    // Gestion des erreurs réseau (ex: serveur local éteint)
+    // Gestion des erreurs réseau (ex: panne serveur)
     console.error("Erreur réseau :", error);
     alert("Impossible de joindre le serveur. Veuillez vérifier votre connexion.");
   }
