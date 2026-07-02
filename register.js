@@ -1,5 +1,5 @@
 // URL de base de ton API REST locale (fournie par le cahier des charges)
-const API_URL = "http://localhost:3000/auth";
+const API_URL = "https://kadea-chat-api.onrender.com";
 
 // Gestion de la visibilité des mots de passe (icône de l'œil)
 document.querySelectorAll('.btn-toggle-password').forEach(button => {
@@ -31,14 +31,20 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const confirmPassword = document.getElementById('confirmPassword').value;
 
   // Validation locale : vérification de la correspondance des mots de passe
+  
   if (password !== confirmPassword) {
     alert("Erreur : Les mots de passe ne correspondent pas !");
     return; // Arrête immédiatement l'exécution du script
   }
+  const specialCharRegex = /[!@#$%^&*(),.?:{}|<>]/;
+  if(!specialCharRegex.test(password)){
+    alert("⚠️ Sécurité : Votre mot de passe doit contenir au moins un caractère spécial (ex: @, !, $, etc.).");
+    return; // Bloque la soumission si le caractère spécial est absent)
+  }
 
   // Préparation des données au format attendu par le backend
   const payload = {
-    username: fullName, // Assure-toi que la clé correspond exactement aux attentes de ton API
+    username: fullName, 
     email: email,
     password: password
   };
