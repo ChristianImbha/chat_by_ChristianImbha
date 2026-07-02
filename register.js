@@ -40,7 +40,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   if(!specialCharRegex.test(password)){
     alert("⚠️ Sécurité : Votre mot de passe doit contenir au moins un caractère spécial (ex: @, !, $, etc.).");
     return; // Bloque la soumission si le caractère spécial est absent)
-  }
+  };
 
   // Préparation des données au format attendu par le backend
   const payload = {
@@ -61,13 +61,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
     const data = await response.json(); // Analyse de la réponse JSON du serveur
 
-    if (response.ok) {
-      alert("Inscription réussie ! Redirection vers la page de connexion...");
-      window.location.href = 'login.html'; // Redirection de l'utilisateur
+   if (response.ok) {
+      alert("🎉 Félicitations ! Votre compte Kadea Chat a été créé avec succès. Redirection vers la page de connexion...");
+      window.location.href = 'login.html'; 
     } else {
-      // Si le serveur renvoie une erreur (ex: email déjà utilisé)
-      alert(`Erreur d'inscription : ${data.message || 'Une erreur est survenue'}`);
-    }
+      alert(`❌ Échec de l'inscription : ${data.message || 'Une erreur est survenue'}`);
+    }  
+
 
   } catch (error) {
     // Gestion des erreurs réseau (ex: serveur local éteint)
