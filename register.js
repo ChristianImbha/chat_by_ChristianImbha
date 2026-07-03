@@ -46,7 +46,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
   // BLOC 3 : Préparation des données au format attendu par le backend
   const payload = {
-    username: fullName, 
+    fullName: fullName, 
     email: email,
     password: password
   };
