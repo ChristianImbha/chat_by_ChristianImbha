@@ -64,12 +64,26 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
     const data = await response.json(); // Analyse de la réponse JSON du serveur
 
-    if (response.ok) {
-      alert("🎉 Félicitations ! Votre compte Kadea Chat a été créé avec succès. Redirection vers la page de connexion...");
-      window.location.href = 'login.html'; 
-    } else {
-      alert(`❌ Échec de l'inscription : ${data.message || 'Une erreur est survenue'}`);
-    }  
+   if (response.ok) {
+  const popup = document.getElementById('popup');
+  const popupContent = document.getElementById('popupContent');
+
+  // Affiche le fond
+  popup.classList.remove('hidden');
+  popup.classList.add('opacity-100');
+
+  // Animation du contenu (fade-in + slide-up)
+  setTimeout(() => {
+    popupContent.classList.remove('translate-y-10', 'opacity-0');
+    popupContent.classList.add('translate-y-0', 'opacity-100');
+  }, 50);
+
+  // Ferme la popup et redirige
+  document.getElementById('popupClose').addEventListener('click', () => {
+    popup.classList.add('hidden');
+    window.location.href = 'login.html';
+  });
+} 
 
   } catch (error) {
     // Gestion des erreurs réseau (ex: panne serveur)
