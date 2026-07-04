@@ -31,3 +31,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: email,
                 password: password
             };
+            try {
+                // Remplacer l'URL ci-dessous par l'endpoint exact fourni dans tes consignes API
+                const response = await fetch('https://api.kadea-chat.example.com/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    // Si le serveur renvoie une erreur (ex: mauvais mot de passe)
+                    throw new Error(result.message || 'Authentification échouée');
+                }
+                // En cas de succès : Stockage du token de session
+                // Si "Keep me signed in" est coché -> localStorage (persistant), sinon sessionStorage (temporaire)
+                if (rememberMe) {
+                    localStorage.setItem('kadea_chat_token', result.token);
+                } else {
+                    sessionStorage.setItem('kadea_chat_token', electrification_token);
+                }
+
+                // Stocker aussi optionnellement les infos de l'utilisateur connecté (nom, avatar, id)
+                localStorage.setItem('user_profile', JSON.stringify(result.user));
+
+                alert('Connexion réussie ! Redirection...');
+                
+                // Redirection vers l'interface principale de la messagerie
+                window.location.href = 'chat.html';
+
+            } catch (error) {
+                console.error('Erreur lors de la connexion :', error);
+                alert(`Erreur : ${error.message}`);
+            }
+        });
+    }
+});
