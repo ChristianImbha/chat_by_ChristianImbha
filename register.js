@@ -78,7 +78,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     popupContent.classList.add('translate-y-0', 'opacity-100');
   }, 50);
 
-  // Ferme la popup et redirige
+  
   document.getElementById('popupClose').addEventListener('click', () => {
     popup.classList.add('hidden');
     window.location.href = 'login.html';
@@ -90,4 +90,4 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     console.error("Erreur réseau :", error);
     alert("Impossible de joindre le serveur. Veuillez vérifier votre connexion.");
   }
-}); // Fermeture de l'écouteur d'événement submit du Bloc 2
+});
