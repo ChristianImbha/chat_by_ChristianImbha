@@ -107,7 +107,23 @@
 
             </div>
 
-            
+            <div class="p-3 bg-gray-100 border-t border-gray-200">
+                <form id="message-form" class="flex items-center space-x-3">
+                    <input type="text" 
+                           id="message-input" 
+                           placeholder="Tapez un message" 
+                           autocomplete="off"
+                           class="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-green-500">
+                    
+                    <button type="submit" 
+                            id="send-btn" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2.5 transition-colors focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
         </main>
 
     
