@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             try {
                 // Remplacer l'URL ci-dessous par l'endpoint exact fourni dans tes consignes API
-                const response = await fetch('https://api.kadea-chat.example.com/auth/login', {
+                const response = await fetch("https://kadea-chat-api.onrender.com", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
