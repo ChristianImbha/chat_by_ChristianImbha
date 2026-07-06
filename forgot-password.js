@@ -1,6 +1,34 @@
 // Initialisation des configurations et liaison au DOM
-const API_KEY = 'TON_API_KEY'; 
-const BASE_URL = 'URL_DE_L_API_KADEA';
+const API_KEY = "wksp_c3e1fb2ba091b7e4a9697b611e1d7168"; 
+const BASE_URL = "https://kadea-chat-api.onrender.com";
 
 const forgotForm = document.getElementById('forgot-form');
 const resetForm = document.getElementById('reset-form');
+// 1. Demande d'envoi du code
+forgotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+
+    try {
+        const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_KEY
+            },
+            body: JSON.stringify({ email: email })
+        });
+
+        if (response.ok) {
+            // Masquer le premier formulaire et afficher le second
+            forgotForm.classList.add('hidden');
+            resetForm.classList.remove('hidden');
+        } else {
+            const errorData = await response.json();
+            alert(`Erreur : ${errorData.message || 'Impossible d\'envoyer le code.'}`);
+        }
+    } catch (error) {
+        console.error('Erreur réseau :', error);
+        alert('Erreur de connexion au serveur.');
+    }
+});
