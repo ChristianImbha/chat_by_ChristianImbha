@@ -49,20 +49,18 @@
                 
             </div>
         </div>
-        <div class="flex flex-1 items-center justify-center">
-            <div class="flex items-center space-x-3 cursor-pointer">
-                <img id="user-avatar" 
-                    src="https://via.placeholder.com/40" 
-                    alt="Photo de profil" 
-                    class="w-10 h-10 rounded-full object-cover border border-gray-300">
-                        
-                <div class="flex flex-col">
-                    <span id="user-name" class="font-semibold text-gray-800 text-sm">Chargement...</span>
-                    <span class="text-xs text-green-600 font-medium">En ligne</span>
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+            
+            <div class="flex flex-col items-center justify-center relative group">
+                <div class="relative w-40 h-40 rounded-full overflow-hidden border-4 border-gray-200 shadow-md">
+                    <img id="profile-avatar" src="https://via.placeholder.com/150" alt="Avatar Utilisateur" class="w-full h-full object-cover">
+                    <label for="avatar-input" class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity duration-200">
+                        <i class="fas fa-camera text-2xl mb-1"></i>
+                        <span class="text-xs font-medium">CHANGER LA PHOTO</span>
+                    </label>
                 </div>
+                <input type="file" id="avatar-input" accept="image/*" class="hidden">
             </div>
-            <div id="fullName" class="">
-                
             </div>
         </div>
 
