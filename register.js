@@ -2,6 +2,32 @@
 const API_URL = "https://kadea-chat-api.onrender.com";
 const Workspace_API_KEY = "wksp_c3e1fb2ba091b7e4a9697b611e1d7168";
 
+// Récupération des éléments du DOM pour le popup d'erreur personnalisé
+const customPopup = document.getElementById('custom-popup');
+const popupMessage = document.getElementById('popup-message');
+const closePopupBtn = document.getElementById('close-popup-btn');
+
+/**
+ * Affiche le popup d'erreur personnalisé
+ * @param {string} message - Le texte à afficher dans la notification
+ */
+function showPopup(message) {
+  popupMessage.textContent = message;
+  customPopup.classList.remove('hidden');
+}
+
+// Écouteur pour fermer le popup d'erreur au clic sur son bouton
+closePopupBtn.addEventListener('click', () => {
+  customPopup.classList.add('hidden');
+});
+
+// Fermer le popup d'erreur si l'utilisateur clique en dehors de la boîte blanche
+customPopup.addEventListener('click', (e) => {
+  if (e.target === customPopup) {
+    customPopup.classList.add('hidden');
+  }
+});
+
 // Gestion de la visibilité des mots de passe (icône de l'œil)
 document.querySelectorAll('.btn-toggle-password').forEach(button => {
   button.addEventListener('click', () => {
@@ -39,14 +65,14 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
   // Validation locale : Correspondance des mots de passe
   if (password !== confirmPassword) {
-    alert("⚠️ Erreur : Les mots de passe ne correspondent pas !");
+    showPopup("⚠️ Erreur : Les mots de passe ne correspondent pas !");
     return;
   }
   
   // Validation locale : Présence d'un caractère spécial
   const specialCharRegex = /[!@#$%^&*(),.?:{}|<>]/;
   if (!specialCharRegex.test(password)) {
-    alert("⚠️ Sécurité : Votre mot de passe doit contenir au moins un caractère spécial (ex: @, !, $, etc.).");
+    showPopup("⚠️ Sécurité : Votre mot de passe doit contenir au moins un caractère spécial (ex: @, !, $, etc.).");
     return;
   }
 
@@ -76,12 +102,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
       popup.classList.remove('hidden');
     } else {
       // Gestion des erreurs renvoyées par l'API (ex: Email déjà existant)
-      alert(`❌ Échec de l'inscription : ${data.message || "Veuillez vérifier les informations saisies."}`);
+      showPopup(`Échec de l'inscription : ${data.message || "Veuillez vérifier les informations saisies."}`);
     }
 
   } catch (error) {
     // Gestion des pannes réseau ou plantages majeurs
     console.error("Erreur réseau :", error);
-    alert("📡 Impossible de joindre le serveur. Veuillez vérifier votre connexion internet.");
+    showPopup("Impossible de joindre le serveur. Veuillez vérifier votre connexion internet.");
   }
+  
 });
