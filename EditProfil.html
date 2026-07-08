@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profi Kadea-Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="bg-white w-full h-full md:max-w-7xl md:h-[95vh] shadow-2xl rounded-none md:rounded-lg flex overflow-hidden">
+     <aside class="w-16 h-full bg-gray-50 border-r border-gray-300 flex flex-col items-center justify-between py-4 flex-shrink-0">
+        <div class="space-y-4">
+            <div class="font-medium text-blue-600">
+                forum
+            </div>
+            <div class="flex flex-col space-y-6">
+                <button id="tab-chat-btn" class=" text-gray-500 hover:text-blue-500 focus:outline-none" title="Discussions">
+                    <i class="fa-solid fa-comment"></i>
+                </button>
+
+                <button id="tab-call-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Appels">
+                    <i class="fa-solid fa-phone text-gray-500 hover:text-blue-500"></i>
+                </button>
+
+                <button id="tab-profile-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Mon Profil">
+                    <i class="fa-solid fa-user text-gray-500 hover:text-blue-500"></i>
+                </button>
+                <button id="tab-settings-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Paramètres">
+                    <i class="fa-solid fa-calendar text-gray-500 hover:text-blue-500"></i>
+                </button>
+                <button id="tab-settings-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Paramètres">
+                    <i class="fa-solid fa-gear text-gray-500 hover:text-blue-500"></i>
+                </button>
+            </div>
+            
+        </div>
+            <div>
+                <button id="tab-settings-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Paramètres">
+                   <i class="fa-solid fa-gear text-gray-500 hover:text-blue-500"></i>
+                </button>
+            </div>
+    </aside>
+
+    <main class="hidden md:flex flex-1 flex-col h-screen bg-gray-50" id="chat-panel">
+        <div class="flex items-center justify-between bg-gray-100 p-3 border-b border-gray-200 shadow-sm">
+            <div class="flex items-center space-x-3">                    
+                <h1 id="active-chat-title" class="font-bold text-blue-600 text-sm">Kadea-Chat</h1>                       
+                
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+            
+            <div class="flex flex-col items-center justify-center relative group">
+                <div class="relative w-40 h-40 rounded-full overflow-hidden border-4 border-gray-200 shadow-md">
+                    <img id="profile-avatar" src="https://via.placeholder.com/150" alt="Avatar Utilisateur" class="w-full h-full object-cover">
+                    <label for="avatar-input" class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity duration-200">
+                        <i class="fas fa-camera text-2xl mb-1"></i>
+                        <span class="text-xs font-medium">CHANGER LA PHOTO</span>
+                    </label>
+                </div>
+                <input type="file" id="avatar-input" accept="image/*" class="hidden">
+            
+                <form id="profile-form" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-[#008069] mb-1">Votre nom</label>
+                        <div class="flex items-center border-b-2 border-gray-200 focus-within:border-[#008069] py-2 transition">
+                            <input type="text" id="profile-name" placeholder="Ex: Jean Doe" required
+                                class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none">
+                            <i class="fas fa-pen text-gray-400 text-sm"></i>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Ce nom sera visible par vos contacts Kadea.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-[#008069] mb-1">Actu</label>
+                        <div class="flex items-center border-b-2 border-gray-200 focus-within:border-[#008069] py-2 transition">
+                            <input type="text" id="profile-status" placeholder="Disponible"
+                                class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none">
+                            <i class="fas fa-pen text-gray-400 text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="pt-4">
+                    <button type="submit" class="w-full bg-[#00a884] hover:bg-[#008069] text-white font-medium py-3 px-4 rounded-md shadow-md transition duration-200 uppercase tracking-wide text-sm">
+                        Enregistrer les modifications
+                    </button>
+                    </div>
+                </form>
+
+            <div id="alert-box" class="hidden p-3 rounded text-sm text-center font-medium"></div>
+
+        </div>
+    </div>
+                
+    
+
+    </main>
+    </div>
+</body>
+</html>
