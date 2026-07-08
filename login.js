@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const togglePasswordBtn = document.querySelector('.btn-toggle-password');
     const passwordInput = document.getElementById('password');
-    // 1. Fonctionnalité Bonus : Afficher / Masquer le mot de passe
+    const API_URL = 'https://kadea-chat-api.onrender.com';
+    const Workspace_API_KEY = 'wksp_c3e1fb2ba091b7e4a9697b611e1d7168';
+    // 1. Afficher / Masquer le mot de passe
     if (togglePasswordBtn && passwordInput) {
         togglePasswordBtn.addEventListener('click', () => {
             const isPassword = passwordInput.type === 'password';
@@ -22,41 +24,42 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
 
             // Récupération des éléments du formulaire
-            const email = document.getElementById('email').value.trim();
+            const emailInput = document.getElementById('email').value.trim();
             const password = passwordInput.value;
             const rememberMe = document.getElementById('remember-me').checked;
 
-            // Préparation des données pour l'API de Kadea
-            const loginData = {
-                email: email,
+            // Préparation des données pour l'API
+            const payload = {
+                email: emailInput,
                 password: password
             };
             try {
-                // Remplacer l'URL ci-dessous par l'endpoint exact fourni dans tes consignes API
+                
                 const response = await fetch("https://kadea-chat-api.onrender.com/auth/login", {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                       'x-api-key': Workspace_API_KEY
                     },
-                    body: JSON.stringify(loginData)
+                    body: JSON.stringify(payload)
                 });
 
-                const result = await response.json();
+                const data = await response.json();
 
                 if (!response.ok) {
                     // Si le serveur renvoie une erreur (ex: mauvais mot de passe)
-                    throw new Error(result.message || 'Authentification échouée');
+                    throw new Error(data.message || 'Authentification échouée');
                 }
                 // En cas de succès : Stockage du token de session
                 // Si "Keep me signed in" est coché -> localStorage (persistant), sinon sessionStorage (temporaire)
                 if (rememberMe) {
-                    localStorage.setItem('kadea_chat_token', result.token);
+                    localStorage.setItem('token', data.data.token);
                 } else {
-                    sessionStorage.setItem('kadea_chat_token',result.token);
+                    sessionStorage.setItem('token',data.data.token);
                 }
 
                 // Stocker aussi optionnellement les infos de l'utilisateur connecté (nom, avatar, id)
-                localStorage.setItem('user_profile', JSON.stringify(result.user));
+                localStorage.setItem('user_profile', JSON.stringify(data.user));
 
                 alert('Connexion réussie ! Redirection...');
                 
