@@ -1,82 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kadea chat - login</title>
+    <title>Kadea chat - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<header class="flex flex-col items-center text-center">
-    <img src="comment.png" alt="Chat Logo" width="48" height="48">
-    <h1 class="text-2xl font-bold text-blue-600 tracking-tight">Welcome back</h1>
-</header>
 <body class="bg-[#f8fafc] flex flex-col items-center justify-center min-h-screen p-4 antialiased">
+    
+    <header class="flex flex-col items-center text-center mb-6">
+        <img src="comment.png" alt="Chat Logo" width="48" height="48">
+        <h1 class="text-2xl font-bold text-blue-600 tracking-tight mt-2">Welcome back</h1>
+    </header>
+
     <main class="w-full max-w-md">
-    
-    <div class="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm">
-      
-      <div class="mb-6">
-        <p class="text-sm text-slate-500 mt-1 text-center">Please enter your detail to sign in to Kadea chat</p>
-      </div> 
-      <form>
-        <div>
-          <label for="email" class="block text-sm font-medium text-slate-600 mb-1.5">Email Address</label>
-          <div class="relative rounded-xl">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <i class="fa-regular fa-envelope text-slate-400"></i>
-            </div>
-            <input type="email" id="email" placeholder="name@example.com" required
-              class="block w-full pl-11 pr-4 py-3 bg-[#eff4ff] border-0 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none text-sm">
-        </div>
-        <div>
-           <div class="flex items-center justify-between mb-6 pt-1">
+        <div class="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm">
+          
+            <div class="mb-6">
+                <p class="text-sm text-slate-500 mt-1 text-center">Please enter your details to sign in to Kadea chat</p>
+            </div> 
+
+            <form id="login-form" class="space-y-4">
+                
                 <div>
-                 <label for="password" class="block text-sm font-medium text-slate-600 mb-1.5">Password</label>
+                    <label for="email" class="block text-sm font-medium text-slate-600 mb-1.5">Email Address</label>
+                    <div class="relative rounded-xl">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-envelope text-slate-400"></i>
+                        </div>
+                        <input type="email" id="email" placeholder="name@example.com" required
+                          class="block w-full pl-11 pr-4 py-3 bg-[#eff4ff] border-0 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none text-sm">
+                    </div>
                 </div>
-                <div class="text-sm">
-                    <a href="forgot-password.html" class="font-medium text-blue-600 hover:text-blue-700 hover:underline">
-                            Forgot password?
-                    </a>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="password" class="block text-sm font-medium text-slate-600">Password</label>
+                        <div class="text-sm">
+                            <a href="forgot-password.html" class="font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                                Forgot password?
+                            </a>
+                        </div>
+                    </div> 
+                    <div class="relative rounded-xl">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-slate-400"></i>
+                        </div>
+                        <input type="password" id="password" placeholder="••••••••" required
+                          class="block w-full pl-11 pr-11 py-3 bg-[#eff4ff] border-0 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none text-sm">
+                        
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                            <button type="button" class="text-slate-400 hover:text-slate-600 focus:outline-none btn-toggle-password" data-target="password">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div> 
+
+                <div class="flex items-center pt-2">
+                    <input id="remember-me" name="remember-me" type="checkbox" 
+                           class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                    <label for="remember-me" class="ml-2 block text-sm text-slate-600 cursor-pointer select-none">
+                        Keep me signed in
+                    </label>
                 </div>
-          </div> 
-          <div class="relative rounded-xl">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <i class="fa-solid fa-lock text-slate-400"></i>
-            </div>
-            <input type="password" id="password" placeholder="••••••••" required
-              class="block w-full pl-11 pr-11 py-3 bg-[#eff4ff] border-0 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none text-sm">
-            <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
-              <button type="button" class="text-slate-400 hover:text-slate-600 focus:outline-none btn-toggle-password" data-target="password">
-                <i class="fa-regular fa-eye"></i>
-              </button>
-            </div>
-          </div>
-        </div> 
 
-            <div class="flex items-center">
-                <input id="remember-me" name="remember-me" type="checkbox" 
-                            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                <label for="remember-me" class="ml-2 block text-sm text-slate-600 cursor-pointer select-none">
-                            Keep me signed in
-                </label>
-            </div>
+                <div class="pt-2">
+                    <button type="submit" 
+                        class="w-full flex items-center justify-center gap-2 bg-[#0052cc] hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-sm transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Login
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>   
+            </form>
+        </div>
 
-            <div class="pt-2">
-          <button type="submit" 
-            class="w-full flex items-center justify-center gap-2 bg-[#0052cc] hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-sm transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            Login
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
-        </div>   
-      </form>
-    </div>
+        <p class="text-sm text-slate-600 text-center mt-6">
+            Don't have an account? <a href="register.html" class="text-blue-600 font-semibold hover:underline">Create Account</a>
+        </p>
+    </main>
 
-    <p class="text-sm text-slate-600 text-center mt-6">
-      Don't have an account? <a href="register.html" class="text-blue-600 font-semibold hover:underline">Create Account</a>
-    </p>
-    
-  </main>
-  <script src="login.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>
