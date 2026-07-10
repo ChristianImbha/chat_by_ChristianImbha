@@ -18,91 +18,38 @@
     </style>
 </head>
 <body class="bg-gray-200 h-screen w-screen flex items-center justify-center font-sans antialiased">
-
-    <div class="bg-white w-full h-full md:max-w-7xl md:h-[95vh] shadow-2xl rounded-none md:rounded-lg flex overflow-hidden">
-        
-        <aside class="w-16 h-full bg-gray-50 border-r border-gray-300 flex flex-col items-center justify-between py-4 flex-shrink-0">
-            <div class="flex flex-col space-y-6">
-                <button id="tab-chat-btn" class=" text-gray-500 hover:text-blue-500 focus:outline-none" title="Discussions">
-                    <i class="fa-solid fa-comment"></i>
+    <aside class="w-20 bg-white border-r border-slate-200 flex flex-col justify-between items-center py-6 flex-shrink-0">
+        <div class="flex flex-col items-center gap-8 w-full">
+            <span class="text-blue-700 font-bold text-xl tracking-tight">forum</span>
+            <nav class="flex flex-col gap-6 w-full items-center">
+                <button class="p-3 text-slate-400 hover:text-slate-600 rounded-xl transition">
+                    <i data-lucide="message-square" class="w-6 h-6"></i>
                 </button>
-
-                <button id="tab-call-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Appels">
-                    <i class="fa-solid fa-phone text-gray-500 hover:text-blue-500"></i>
+                <button class="p-3 text-slate-400 hover:text-slate-600 rounded-xl transition">
+                    <i data-lucide="phone" class="w-6 h-6"></i>
                 </button>
-
-                <button id="tab-profile-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Mon Profil">
-                    <i class="fa-solid fa-user text-gray-500 hover:text-blue-500"></i>
+                <button class="p-3 text-slate-400 hover:text-slate-600 rounded-xl transition">
+                    <i data-lucide="user" class="w-6 h-6"></i>
                 </button>
-                <button id="tab-settings-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Paramètres">
-                    <i class="fa-solid fa-calendar text-gray-500 hover:text-blue-500"></i>
+                <button class="p-3 text-slate-400 hover:text-slate-600 rounded-xl transition">
+                    <i data-lucide="calendar" class="w-6 h-6"></i>
+                </button>
+            </nav>
+        </div>
+
+        <div class="flex flex-col items-center gap-6 w-full">
+            <div class="relative w-full flex justify-center">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r"></div>
+                <button class="p-3 text-blue-600 rounded-xl">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
                 </button>
             </div>
-
-            <div>
-                <button id="tab-settings-btn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Paramètres">
-                    <i class="fa-solid fa-gear text-gray-500 hover:text-blue-500"></i>
-                </button>
-            </div>
-        </aside> 
-
-        <aside class="w-full md:w-1/3 border-r border-gray-300 flex flex-col h-full bg-white" id="sidebar-panel">
-            <div class="flex items-center justify-between bg-gray-100 p-3 border-b border-gray-200">
-                <div class="flex items-center space-x-3 cursor-pointer">
-                    <img id="user-avatar" 
-                         src="https://via.placeholder.com/40" 
-                         alt="Photo de profil" 
-                         class="w-10 h-10 rounded-full object-cover border border-gray-300">
-                    
-                    <div class="flex flex-col">
-                        <span id="user-name" class="font-semibold text-gray-800 text-sm">Chargement...</span>
-                        <span class="text-xs text-green-600 font-medium">En ligne</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-3 text-gray-600">
-                    <button id="new-chat-btn" class="hover:text-gray-900 focus:outline-none" title="Nouvelle discussion">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                    </button>
-                    <button id="logout-btn" class="hover:text-red-600 focus:outline-none" title="Se déconnecter">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-2 bg-gray-50 border-b border-gray-200">
-                <div class="relative flex items-center bg-white rounded-lg px-3 py-1.5 border border-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input type="text" 
-                           id="search-chat" 
-                           placeholder="Rechercher ou démarrer une discussion" 
-                           class="w-full text-sm bg-transparent outline-none text-gray-700 placeholder-gray-400">
-                </div>
-            </div>
-
-            <div id="chats-container" class="flex-1 overflow-y-auto no-scrollbar divide-y divide-gray-100">
-                <div class="flex items-center space-x-3 p-3 hover:bg-gray-50 cursor-pointer transition-colors">
-                    <div class="relative flex-shrink-0">
-                        <img src="https://via.placeholder.com/45" class="w-11 h-11 rounded-full object-cover" alt="Avatar">
-                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
-                            <p class="text-sm font-semibold text-gray-900 truncate">Groupe Apprenants Kadea</p>
-                            <span class="text-xs text-gray-400">12:35</span>
-                        </div>
-                        <p class="text-xs text-gray-500 truncate">Dernier message reçu de l'API...</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
+            <button class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition shadow-sm">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </aside>
+    
         <main class="hidden md:flex flex-1 flex-col h-full bg-gray-50" id="chat-panel">
             <div class="flex items-center justify-between bg-gray-100 p-3 border-b border-gray-200 shadow-sm">
                 <div class="flex items-center space-x-3">
