@@ -163,3 +163,9 @@ messageForm.addEventListener("submit", async (e) => {
         console.error("Erreur envoi:", error);
     }
 });
+
+// Initialisation au chargement de la page
+document.addEventListener("DOMContentLoaded", () => {
+    loadRooms();
+});
+
