@@ -21,3 +21,49 @@ const chatPanel = document.getElementById("chat-panel");
 const activeChatTitle = document.getElementById("active-chat-title");
 const activeChatStatus = document.getElementById("active-chat-status");
 const activeChatAvatar = document.getElementById("active-chat-avatar");
+
+// 1. FONCTION : Charger et afficher la liste des conversations (à gauche)
+async function loadRooms() {
+    try {
+        const response = await fetch(`"https://kadea-chat-api.onrender.com"/rooms`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                "x-api-key": Workspace_API_KEY
+            }
+        });
+
+        if (!response.ok) throw new Error("Impossible de récupérer les salons.");
+
+        const data = await response.json();
+        renderRoomsList(data.rooms || data); // S'adapte selon le format renvoyé par ton API
+    } catch (error) {
+        console.error("Erreur lors du chargement des salons :", error);
+    }
+}
+
+// 2. FONCTION : Injecter la liste des salons dans le HTML
+function renderRoomsList(rooms) {
+    const roomsContainer = document.getElementById("rooms-list");
+    if (!roomsContainer) return;
+
+    roomsContainer.innerHTML = ""; // On vide le loader ou les éléments statiques
+
+    rooms.forEach(room => {
+        const roomElement = document.createElement("div");
+        roomElement.className = `flex items-center space-x-3 p-3 hover:bg-slate-100 cursor-pointer rounded-xl transition ${activeRoomId === room.id ? 'bg-slate-100' : ''}`;
+        
+        roomElement.innerHTML = `
+            <img src="${room.avatar || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-full object-cover" alt="Avatar">
+            <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-semibold text-gray-800 truncate">${room.name}</h3>
+                <p class="text-xs text-gray-500 truncate">${room.lastMessage || 'Aucun message'}</p>
+            </div>
+        `;
+
+        // Événement au clic pour ouvrir la discussion
+        roomElement.addEventListener("click", () => selectRoom(room));
+        roomsContainer.appendChild(roomElement);
+    });
+}
