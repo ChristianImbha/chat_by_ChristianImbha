@@ -90,29 +90,7 @@ function renderConversationsList(conversations) {
         roomsContainer.appendChild(convElement);
     });
 }
-2. Corriger renderMessages selon le schéma Swagger
-Sur ta deuxième image, le schéma d'un message indique que l'expéditeur est contenu dans un sous-objet sender : sender: User { id, fullName, ... }.
-Il faut donc corriger la ligne du senderId ainsi :
 
-JavaScript
-// Dans ta fonction renderMessages(messages) :
-messages.forEach(msg => {
-    // CORRECTION ICI : msg.sender.id au lieu de msg.senderId
-    const isMe = msg.sender?.id === localStorage.getItem("userId"); 
-    
-    const messageBlock = document.createElement("div");
-    messageBlock.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'}`;
-
-    messageBlock.innerHTML = `
-        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'} max-w-xl text-sm rounded-2xl p-3 shadow-xs flex flex-col">
-            ${!isMe ? `<p class="font-bold text-xs text-blue-600 mb-0.5">${msg.sender?.fullName || 'Utilisateur'}</p>` : ''}
-            <p class="break-words">${msg.content}</p>
-            <span class="block text-right text-[10px] ${isMe ? 'text-blue-200' : 'text-gray-400'} mt-1">${formatTime(msg.createdAt)}</span>
-        </div>
-    `;
-
-    messagesContainer.appendChild(messageBlock);
-});
 
 // 3. FONCTION : Sélectionner une conversation et charger son historique
 async function selectConversation(conv) {
