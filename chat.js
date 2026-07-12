@@ -154,28 +154,62 @@ function renderMessages(messagesData) {
     const messagesContainer = document.getElementById("messages-container"); // Ajuste l'ID si nécessaire
     messagesContainer.innerHTML = ""; // On vide le conteneur
 
-    // 🔍 Sécurisation : On cherche le tableau des messages dans la réponse de l'API
-    let messagesArray = [];
+    // Sécurisation : On cherche le tableau des messages dans la réponse de l'API
+    let messages = [];
     
     if (Array.isArray(messagesData)) {
-        messagesArray = messagesData;
+        messages = messagesData;
     } else if (messagesData && messagesData.data) {
         if (Array.isArray(messagesData.data)) {
-            messagesArray = messagesData.data;
+            messages = messagesData.data;
         } else if (messagesData.data.messages && Array.isArray(messagesData.data.messages)) {
-            messagesArray = messagesData.data.messages;
+            messages = messagesData.data.messages;
         }
     } else if (messagesData && messagesData.messages && Array.isArray(messagesData.messages)) {
-        messagesArray = messagesData.messages;
+        messages = messagesData.messages;
     }
 
     // Si aucun message ou si le salon est vide, on s'arrête proprement
-    if (messagesArray.length === 0) {
+    if (messages.length === 0) {
         messagesContainer.innerHTML = "<p class='text-center text-gray-500 py-4'>Aucun message dans cette discussion.</p>";
         return;
     } 
 
     messages.forEach(msg => {
+        1. Créer l'élément conteneur de la bulle
+    const messageElement = document.createElement("div");
+
+    // 2. Récupérer ton propre ID utilisateur connecté (ajuste selon ton code)
+    // Par exemple : const currentUserId = localStorage.getItem("userId") ou une variable globale
+    const currentUserId = "063b24e5-ef46-400a-a7c9-27735d4101d0"; 
+
+    // 3. Vérifier si c'est toi qui as envoyé le message
+    // Note : Selon l'API, ça peut être msg.senderId ou msg.sender.id ou msg.userId
+    const isMe = msg.senderId === currentUserId || (msg.sender && msg.sender.id === currentUserId);
+
+    // 4. Appliquer les classes CSS selon le côté
+    if (isMe) {
+        // Message envoyé (aligné à droite, fond bleu/vert par exemple)
+        messageElement.className = "flex justify-end mb-2";
+        messageElement.innerHTML = `
+            <div class="bg-blue-600 text-white p-3 rounded-lg max-w-xs shadow">
+                <p class="text-sm">${msg.content || msg.text}</p>
+            </div>
+        `;
+    } else {
+        // Message reçu (aligné à gauche, fond gris/blanc)
+        messageElement.className = "flex justify-start mb-2";
+        messageElement.innerHTML = `
+            <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-xs shadow">
+                <p class="text-xs text-gray-500 font-semibold mb-1">${msg.sender?.fullName || "Autre"}</p>
+                <p class="text-sm">${msg.content || msg.text}</p>
+            </div>
+        `;
+    }
+
+    // 5. Ajouter la bulle au conteneur principal
+    messagesContainer.appendChild(messageElement);
+});
         const isMe = msg.sender?.id === localStorage.getItem("userId"); 
         
         const messageBlock = document.createElement("div");
