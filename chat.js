@@ -58,23 +58,61 @@ function renderConversationsList(conversations) {
 
     roomsContainer.innerHTML = ""; 
 
+    if (conversations.length === 0) {
+        roomsContainer.innerHTML = `<p class="text-xs text-gray-400 text-center p-4">Aucune conversation. Créez-en une sur Swagger !</p>`;
+        return;
+    }
+
     conversations.forEach(conv => {
         const convElement = document.createElement("div");
         convElement.dataset.conversationId = conv.id;
         convElement.className = `conversation-item flex items-center space-x-3 p-3 hover:bg-slate-100 cursor-pointer rounded-xl transition ${activeConversationId === conv.id ? 'bg-slate-100' : ''}`;
         
+        // Trouver le participant qui n'est pas moi pour afficher son nom
+        const currentUserId = localStorage.getItem("userId");
+        const interlocuteur = conv.participants?.find(p => p.id !== currentUserId);
+        const displayName = conv.type === 'private' ? (interlocuteur?.fullName || 'Utilisateur') : conv.name;
+        const displayAvatar = interlocuteur?.avatarUrl || 'https://via.placeholder.com/40';
+
         convElement.innerHTML = `
-            <img src="${conv.avatar || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-full object-cover" alt="Avatar">
+            <img src="${displayAvatar}" class="w-10 h-10 rounded-full object-cover" alt="Avatar">
             <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-semibold text-gray-800 truncate">${conv.name || 'Discussion privée'}</h3>
-                <p class="text-xs text-gray-500 truncate">${conv.lastMessage || 'Aucun message'}</p>
+                <h3 class="text-sm font-semibold text-gray-800 truncate">${displayName}</h3>
+                <p class="text-xs text-gray-500 truncate">Cliquez pour voir les messages</p>
             </div>
         `;
 
-        convElement.addEventListener("click", () => selectConversation(conv));
+        convElement.addEventListener("click", () => selectConversation({
+            id: conv.id,
+            name: displayName,
+            avatar: displayAvatar
+        }));
         roomsContainer.appendChild(convElement);
     });
 }
+2. Corriger renderMessages selon le schéma Swagger
+Sur ta deuxième image, le schéma d'un message indique que l'expéditeur est contenu dans un sous-objet sender : sender: User { id, fullName, ... }.
+Il faut donc corriger la ligne du senderId ainsi :
+
+JavaScript
+// Dans ta fonction renderMessages(messages) :
+messages.forEach(msg => {
+    // CORRECTION ICI : msg.sender.id au lieu de msg.senderId
+    const isMe = msg.sender?.id === localStorage.getItem("userId"); 
+    
+    const messageBlock = document.createElement("div");
+    messageBlock.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'}`;
+
+    messageBlock.innerHTML = `
+        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'} max-w-xl text-sm rounded-2xl p-3 shadow-xs flex flex-col">
+            ${!isMe ? `<p class="font-bold text-xs text-blue-600 mb-0.5">${msg.sender?.fullName || 'Utilisateur'}</p>` : ''}
+            <p class="break-words">${msg.content}</p>
+            <span class="block text-right text-[10px] ${isMe ? 'text-blue-200' : 'text-gray-400'} mt-1">${formatTime(msg.createdAt)}</span>
+        </div>
+    `;
+
+    messagesContainer.appendChild(messageBlock);
+});
 
 // 3. FONCTION : Sélectionner une conversation et charger son historique
 async function selectConversation(conv) {
