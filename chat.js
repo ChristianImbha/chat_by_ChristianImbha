@@ -120,23 +120,23 @@ async function loadMessages(conversationId) {
     }
 }
 
-// 5. FONCTION : Afficher les messages à l'écran
+// 5. FONCTION : Afficher les messages à l'écran (Ajustée pour Tailwind)
 function renderMessages(messages) {
     if (!messagesContainer) return;
     messagesContainer.innerHTML = ""; 
 
     messages.forEach(msg => {
-        // Attention : Vérifie bien que "userId" est stocké dans ton localStorage lors du Login !
         const isMe = msg.senderId === localStorage.getItem("userId"); 
         
         const messageBlock = document.createElement("div");
-        messageBlock.className = `flex items-end space-x-2 max-w-[75%] ${isMe ? 'ml-auto justify-end' : ''}`;
+        // Utilisation de w-full et justification pour bloquer les messages du bon côté
+        messageBlock.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'}`;
 
         messageBlock.innerHTML = `
-            <div class="${isMe ? 'bg-green-100 rounded-br-none' : 'bg-white rounded-bl-none'} text-gray-800 text-sm rounded-lg p-2.5 shadow-sm">
-                ${!isMe ? `<p class="font-bold text-xs text-indigo-600 mb-0.5">${msg.senderName || 'Utilisateur'}</p>` : ''}
-                <p>${msg.content}</p>
-                <span class="block text-right text-[10px] text-gray-400 mt-1">${formatTime(msg.createdAt)}</span>
+            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'} max-w-xl text-sm rounded-2xl p-3 shadow-xs flex flex-col">
+                ${!isMe ? `<p class="font-bold text-xs text-blue-600 mb-0.5">${msg.senderName || 'Utilisateur'}</p>` : ''}
+                <p class="break-words">${msg.content}</p>
+                <span class="block text-right text-[10px] ${isMe ? 'text-blue-200' : 'text-gray-400'} mt-1">${formatTime(msg.createdAt)}</span>
             </div>
         `;
 
