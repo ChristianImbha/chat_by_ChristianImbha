@@ -52,7 +52,7 @@ async function loadUsers() {
         const resJson = await response.json();
         
         let usersArray = [];
-        // On extrait le tableau d'utilisateurs selon la structure de l'API Kadea
+        // On extrait le tableau d'utilisateurs selon la structure de l'API
         if (resJson.data && Array.isArray(resJson.data.users)) {
             usersArray = resJson.data.users;
         } else if (Array.isArray(resJson.data)) {
@@ -116,7 +116,7 @@ async function loadMyProfile() {
         const resJson = await response.json();
         const userData = resJson.data || resJson;
         
-        // 🚀 CRUCIAL : On extrait l'ID renvoyé par l'API
+        //  On extrait l'ID renvoyé par l'API
         const myId = userData.id || userData._id;
 
         if (myId) {

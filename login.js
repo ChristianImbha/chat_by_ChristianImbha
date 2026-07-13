@@ -1,73 +1,52 @@
-// On attend que le DOM soit complètement chargé
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
-    const togglePasswordBtn = document.querySelector('.btn-toggle-password');
-    const passwordInput = document.getElementById('password');
-    const API_URL = 'https://kadea-chat-api.onrender.com';
-    const Workspace_API_KEY = 'wksp_c3e1fb2ba091b7e4a9697b611e1d7168';
-   
-    // 2. Gestion de la soumission du formulaire (Authentification)
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+/const loginForm = document.getElementById("login-form"); // Ajuste l'ID selon ton HTML
+const loginBtn = document.getElementById("login-btn");
+const loginSpinner = document.getElementById("login-spinner");
+const loginBtnText = document.getElementById("login-btn-text");
 
-            // Récupération des éléments du formulaire
-            const emailInput = document.getElementById('email').value.trim();
-            const password = passwordInput.value;
-            const rememberMe = document.getElementById('remember-me').checked;
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            // Préparation des données pour l'API
-            const payload = {
-                email: emailInput,
-                password: password
-            };
-            try {
-                const response = await fetch("https://kadea-chat-api.onrender.com/auth/login", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': Workspace_API_KEY
-                    },
-                    body: JSON.stringify(payload)
-                });
+        // 1. Activation du micro-loader
+        if (loginBtn) loginBtn.disabled = true;
+        if (loginSpinner) loginSpinner.classList.remove("hidden");
+        if (loginBtnText) loginBtnText.textContent = "Connexion en cours...";
 
-                const data = await response.json();
+        try {
+            // Remplace ce fetch par ta logique existante de login
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: emailInput.value,
+                    password: passwordInput.value
+                })
+            });
 
-                if (!response.ok) {
-                    throw new Error(data.message || 'Authentification échouée');
-                }
+            const result = await response.json();
 
-                // Récupération sécurisée du token selon la structure de ton API
-                // (s'adapte si le token est dans data.token ou data.data.token)
-                const userToken = data.token || (data.data && data.data.token);
-                
-                // Extraction de l'ID utilisateur (utile pour renderMessages dans chat.js)
-                const userId = data.user?.id || data.userId || (data.data && data.data.user && data.data.user.id);
-
-                if (!userToken) {
-                    throw new Error("Le serveur n'a pas renvoyé de jeton d'authentification valide.");
-                }
-
-                // Stockage du jeton selon le choix "Remember me"
-                if (rememberMe) {
-                    localStorage.setItem('token', userToken);
-                } else {
-                    sessionStorage.setItem('token', userToken);
-                }
-
-                // Stockage des informations essentielles pour le fonctionnement du chat
-                if (userId) {
-                    localStorage.setItem('userId', userId);
-                }
-                localStorage.setItem('user_profile', JSON.stringify(data.user || data.data?.user || {}));
-                             
-                // Redirection vers l'interface principale
-                window.location.href = 'chat.html';
-
-            } catch (error) {
-                console.error('Erreur lors de la connexion :', error);
-                alert(`Erreur : ${error.message}`);
+            if (response.ok) {
+                // Connexion réussie : on stocke le token et on redirige
+                localStorage.setItem("token", result.token || result.data?.token);
+                localStorage.setItem("userId", result.userId || result.data?.userId || result.data?.user?.id);
+                window.location.href = "chat.html";
+            } else {
+                // L'API renvoie une erreur (ex: mauvais mot de passe)
+                alert(result.message || "Identifiants incorrects.");
+                resetLoginButton(); // On remet le bouton normal
             }
-        });
-    }
-});
+
+        } catch (error) {
+            console.error("Erreur lors de la connexion :", error);
+            alert("Une erreur réseau est survenue. Veuillez réessayer.");
+            resetLoginButton(); // On remet le bouton normal en cas de crash
+        }
+    });
+}
+
+// Fonction pour remettre le bouton de connexion à son état initial
+function resetLoginButton() {
+    if (loginBtn) loginBtn.disabled = false;
+    if (loginSpinner) loginSpinner.classList.add("hidden");
+    if (loginBtnText) loginBtnText.textContent = "Se connecter";
+}
