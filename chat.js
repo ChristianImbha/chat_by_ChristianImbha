@@ -64,14 +64,10 @@ async function loadUsers() {
         console.error("Erreur lors du chargement des utilisateurs :", error);
     }
 }
-//2 NOUVELLE FONCTION : Charger et afficher les infos de l'utilisateur connecté
+// 2. FONCTION : Charger et afficher les infos de l'utilisateur connecté via /auth/me
 async function loadMyProfile() {
     try {
-        // Souvent sur les API Kadea, la route pour son propre profil est /users/me ou /auth/me
-        // Si l'API ne l'a pas, on peut aussi chercher l'utilisateur spécifique via son ID stocké
-        const currentUserId = localStorage.getItem("userId");
-        
-        const response = await fetch(`${API_URL}/users/${currentUserId}`, {
+        const response = await fetch(`${API_URL}/auth/me`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -80,17 +76,25 @@ async function loadMyProfile() {
             }
         });
 
-        if (response.ok) {
-            const resJson = await response.json();
-            // On extrait les données (s'adapte si c'est dans resJson.data)
-            const userData = resJson.data || resJson;
+        if (!response.ok) throw new Error("Impossible de récupérer le profil connecté.");
 
-            // Mise à jour du HTML
-            if (myAvatar) myAvatar.src = userData.avatarUrl || 'https://via.placeholder.com/40';
-            if (myName) myName.textContent = userData.fullName || 'Mon Profil';
+        const resJson = await response.json();
+        console.log("Structure Swagger /auth/me reçue :", resJson);
+        
+        // Extraction des données de l'utilisateur (on s'adapte s'il y a un sous-objet .data)
+        const userData = resJson.data || resJson;
+
+        // Mise à jour de l'avatar dans le HTML
+        if (myAvatar) {
+            myAvatar.src = userData.avatarUrl || 'https://via.placeholder.com/40';
+        }
+        
+        // Affichage de ton ID utilisateur à la place du nom complet
+        if (myName) {
+            myName.textContent = userData.id || localStorage.getItem("userId") || 'Mon ID';
         }
     } catch (error) {
-        console.error("Erreur lors du chargement du profil :", error);
+        console.error("Erreur lors du chargement du profil via /auth/me :", error);
     }
 }
 // 3. FONCTION : Injecter la liste des utilisateurs dans le HTML à gauche
