@@ -1,6 +1,9 @@
 // configuration de l'API
 const API_URL = "https://kadea-chat-api.onrender.com"; 
 const Workspace_API_KEY = 'wksp_c3e1fb2ba091b7e4a9697b611e1d7168';
+// Éléments du profil utilisateur connecté
+const myAvatar = document.getElementById("my-avatar");
+const myName = document.getElementById("my-name");
 
 // Sécurisation de la page : Vérification immédiate du Token
 const token = localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -61,8 +64,36 @@ async function loadUsers() {
         console.error("Erreur lors du chargement des utilisateurs :", error);
     }
 }
+//2 NOUVELLE FONCTION : Charger et afficher les infos de l'utilisateur connecté
+async function loadMyProfile() {
+    try {
+        // Souvent sur les API Kadea, la route pour son propre profil est /users/me ou /auth/me
+        // Si l'API ne l'a pas, on peut aussi chercher l'utilisateur spécifique via son ID stocké
+        const currentUserId = localStorage.getItem("userId");
+        
+        const response = await fetch(`${API_URL}/users/${currentUserId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                "x-api-key": Workspace_API_KEY
+            }
+        });
 
-// 2. FONCTION : Injecter la liste des utilisateurs dans le HTML à gauche
+        if (response.ok) {
+            const resJson = await response.json();
+            // On extrait les données (s'adapte si c'est dans resJson.data)
+            const userData = resJson.data || resJson;
+
+            // Mise à jour du HTML
+            if (myAvatar) myAvatar.src = userData.avatarUrl || 'https://via.placeholder.com/40';
+            if (myName) myName.textContent = userData.fullName || 'Mon Profil';
+        }
+    } catch (error) {
+        console.error("Erreur lors du chargement du profil :", error);
+    }
+}
+// 3. FONCTION : Injecter la liste des utilisateurs dans le HTML à gauche
 function renderUsersList(users) {
     const roomsContainer = document.getElementById("rooms-list");
     if (!roomsContainer) return;
@@ -95,28 +126,22 @@ function renderUsersList(users) {
     });
 }
 
-// 3  fonction intermédiaire au clic sur un utilisateur
+// 4  fonction intermédiaire au clic sur un utilisateur
 async function handleStartChat(targetUserId, displayName, displayAvatar) {
     try {
+        // On tente de créer la conversation avec cet utilisateur
         const response = await fetch(`${API_URL}/conversations`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
                 "x-api-key": Workspace_API_KEY
-            },
-            body: JSON.stringify({
-                type: "private",
-                participantIds: [targetUserId], // Tableau de chaînes de caractères comme demandé
-                name: "Discussion Privée"
-            })
+            }
         });
-
-        if (!response.ok) throw new Error("Erreur lors de l'initialisation de la conversation.");
 
         const result = await response.json();
         
-        // Récupération de l'ID de la conversation créée ou existante
+        // Si l'API renvoie le salon créé (ou déjà existant)
         let conversationId = null;
         if (result.data && result.data.id) {
             conversationId = result.data.id;
@@ -125,6 +150,7 @@ async function handleStartChat(targetUserId, displayName, displayAvatar) {
         }
 
         if (conversationId) {
+            // On utilise ta fonction selectConversation existante pour ouvrir le chat !
             selectConversation({
                 id: conversationId,
                 name: displayName,
@@ -268,50 +294,10 @@ if (messageForm) {
         }
     });
 }
-// 8. GESTION DE LA CRÉATION D'UNE NOUVELLE DISCUSSION VIA L'INTERFACE
-const btnAddConversation = document.getElementById("btn-add-conversation");
-const newUserIdInput = document.getElementById("new-user-id");
 
-if (btnAddConversation && newUserIdInput) {
-    btnAddConversation.addEventListener("click", async () => {
-        const targetUserId = newUserIdInput.value.trim();
-
-        if (!targetUserId) {
-            alert("Veuillez mettre l'ID d'un utilisateur pour commencer une discussion.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_URL}/conversations`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                    "x-api-key": Workspace_API_KEY
-                },
-                body: JSON.stringify({
-                    type: "private",
-                    participantIds: [targetUserId],
-                    name: "Discussion Privée"
-                })
-            });
-
-            if (response.ok) {
-                alert("Discussion créée avec succès !");
-                newUserIdInput.value = ""; // Vide le champ
-                await loadConversations(); // Recharge la liste de gauche pour l'afficher
-            } else {
-                const errorData = await response.json();
-                alert(`Erreur : ${errorData.message || "Impossible de créer la discussion"}`);
-            }
-        } catch (error) {
-            console.error("Erreur création conversation :", error);
-            alert("Une erreur réseau est survenue.");
-        }
-    });
-}
 
 // Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
     loadUsers(); // On charge les personnes enregistrées directement !
+    loadMyProfile();
 });
