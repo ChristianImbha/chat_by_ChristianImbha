@@ -97,7 +97,43 @@ function renderUsersList(users) {
     });
 }
 
-// 3. FONCTION : Sélectionner une conversation et charger son historique
+// 3  fonction intermédiaire au clic sur un utilisateur
+async function handleStartChat(targetUserId, displayName, displayAvatar) {
+    try {
+        // On tente de créer la conversation avec cet utilisateur
+        const response = await fetch(`${API_URL}/conversations`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                "x-api-key": Workspace_API_KEY
+            }
+        });
+
+        const result = await response.json();
+        
+        // Si l'API renvoie le salon créé (ou déjà existant)
+        let conversationId = null;
+        if (result.data && result.data.id) {
+            conversationId = result.data.id;
+        } else if (result.id) {
+            conversationId = result.id;
+        }
+
+        if (conversationId) {
+            // On utilise ta fonction selectConversation existante pour ouvrir le chat !
+            selectConversation({
+                id: conversationId,
+                name: displayName,
+                avatar: displayAvatar
+            });
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'ouverture de la discussion :", error);
+    }
+}
+
+// 4. FONCTION : Sélectionner une conversation et charger son historique
 async function selectConversation(conv) {
     activeConversationId = conv.id;
     
@@ -120,7 +156,7 @@ async function selectConversation(conv) {
     await loadMessages(conv.id);
 }
 
-// 4. FONCTION : Récupérer les messages de la conversation active
+// 5. FONCTION : Récupérer les messages de la conversation active
 async function loadMessages(conversationId) {
     try {
          const response = await fetch(`${API_URL}/conversations/${conversationId}/messages`, {
@@ -140,7 +176,7 @@ async function loadMessages(conversationId) {
     }
 }
 
-// 5. FONCTION : Afficher les messages à l'écran (Ajustée pour Tailwind)
+// 6. FONCTION : Afficher les messages à l'écran (Ajustée pour Tailwind)
 function renderMessages(messagesData) {
     const messagesContainer = document.getElementById("messages-container"); 
     if (!messagesContainer) return;
@@ -196,7 +232,7 @@ function renderMessages(messagesData) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// 6. ÉCOUTEUR D'ÉVÉNEMENT : Gérer l'envoi d'un nouveau message
+// 7. ÉCOUTEUR D'ÉVÉNEMENT : Gérer l'envoi d'un nouveau message
 if (messageForm) {
     messageForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -229,7 +265,7 @@ if (messageForm) {
         }
     });
 }
-// 7. GESTION DE LA CRÉATION D'UNE NOUVELLE DISCUSSION VIA L'INTERFACE
+// 8. GESTION DE LA CRÉATION D'UNE NOUVELLE DISCUSSION VIA L'INTERFACE
 const btnAddConversation = document.getElementById("btn-add-conversation");
 const newUserIdInput = document.getElementById("new-user-id");
 
