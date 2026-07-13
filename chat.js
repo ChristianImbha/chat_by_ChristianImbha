@@ -44,14 +44,12 @@ async function loadUsers() {
 
         if (!response.ok) throw new Error("Impossible de récupérer la liste des utilisateurs.");
         
-        const data = await response.json();
+        const resJson = await response.json();
         
         let usersArray = [];
         // Sécurisation de la structure comme on a fait avant
-        if (data.data) {
-            usersArray = Array.isArray(data.data) ? data.data : (data.data.users || []);
-        } else if (Array.isArray(data)) {
-            usersArray = data;
+       if (resJson.data && Array.isArray(resJson.data.users)) {
+            usersArray = resJson.data.users;
         }
 
         // On filtre la liste pour NE PAS s'afficher soi-même dans la liste
@@ -100,19 +98,25 @@ function renderUsersList(users) {
 // 3  fonction intermédiaire au clic sur un utilisateur
 async function handleStartChat(targetUserId, displayName, displayAvatar) {
     try {
-        // On tente de créer la conversation avec cet utilisateur
         const response = await fetch(`${API_URL}/conversations`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
                 "x-api-key": Workspace_API_KEY
-            }
+            },
+            body: JSON.stringify({
+                type: "private",
+                participantIds: [targetUserId], // Tableau de chaînes de caractères comme demandé
+                name: "Discussion Privée"
+            })
         });
+
+        if (!response.ok) throw new Error("Erreur lors de l'initialisation de la conversation.");
 
         const result = await response.json();
         
-        // Si l'API renvoie le salon créé (ou déjà existant)
+        // Récupération de l'ID de la conversation créée ou existante
         let conversationId = null;
         if (result.data && result.data.id) {
             conversationId = result.data.id;
@@ -121,7 +125,6 @@ async function handleStartChat(targetUserId, displayName, displayAvatar) {
         }
 
         if (conversationId) {
-            // On utilise ta fonction selectConversation existante pour ouvrir le chat !
             selectConversation({
                 id: conversationId,
                 name: displayName,
