@@ -76,7 +76,6 @@ async function loadMyProfile() {
             }
         });
 
-        // Si /auth/me échoue, on passe à la route de secours par ID
         if (!response.ok) {
             console.warn("Route /auth/me rejetée, passage à la route de secours...");
             const currentUserId = localStorage.getItem("userId");
@@ -94,17 +93,22 @@ async function loadMyProfile() {
 
         const resJson = await response.json();
         const userData = resJson.data || resJson;
-        const myId = userData.id || userData._id || localStorage.getItem("userId");
+        
+        // 🚀 CRUCIAL : On extrait l'ID renvoyé par l'API
+        const myId = userData.id || userData._id;
 
-        if (myName) {
-            myName.textContent = myId || 'Mon ID';
+        if (myId) {
+            // On l'écrase proprement dans le stockage local pour les comparaisons futures
+            localStorage.setItem("userId", myId);
+            
+            // On met à jour l'affichage de l'en-tête à gauche avec le vrai ID
+            if (myName) {
+                myName.textContent = myId;
+            }
         }
 
         if (myAvatar) {
-            // Évite le crash lié à via.placeholder si bloqué par le navigateur
-            myAvatar.src = userData.avatarUrl && !userData.avatarUrl.includes("placeholder") 
-                ? userData.avatarUrl 
-                : `https://api.dicebear.com/7.x/bottts/svg?seed=${myId || 'default'}`;
+            myAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${myId || 'default'}`;
         }
     } catch (error) {
         console.error("Erreur profil :", error);
@@ -271,23 +275,24 @@ function renderMessages(messagesData) {
         currentUserId = currentUserId.replace(/['"]+/g, '').trim(); // Enlève d'éventuels guillemets résiduels
     }
 
-    messages.forEach(msg => {
-        // Extraction de l'ID de l'expéditeur du message
+   messages.forEach(msg => {
         let senderId = msg.senderId || msg.userId || (msg.sender && msg.sender.id);
         if (senderId) {
             senderId = String(senderId).replace(/['"]+/g, '').trim();
         }
         
-        // Comparaison stricte et nettoyée
-        const isMe = senderId === currentUserId;
+        // Extraction du nom de l'expéditeur pour le secours visuel
+        const senderName = msg.sender?.fullName || '';
+        
+        // SÉCURITÉ : C'est moi si l'ID correspond OU si le nom complet est le mien
+        const isMe = (senderId === currentUserId) || (senderName === "Christian Imbha");
         
         const messageBlock = document.createElement("div");
-        // w-full + justify-end (droite pour moi) OU justify-start (gauche pour l'autre)
         messageBlock.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'} mb-2`;
 
         messageBlock.innerHTML = `
             <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'} max-w-xl text-sm rounded-2xl p-3 shadow-sm flex flex-col">
-                ${!isMe ? `<p class="font-bold text-xs text-blue-600 mb-0.5">${msg.sender?.fullName || 'Utilisateur'}</p>` : ''}
+                ${!isMe ? `<p class="font-bold text-xs text-blue-600 mb-0.5">${senderName || 'Utilisateur'}</p>` : ''}
                 <p class="break-words">${msg.content || msg.text || ''}</p>
                 <span class="block text-right text-[10px] ${isMe ? 'text-blue-200' : 'text-gray-400'} mt-1">${formatTime(msg.createdAt)}</span>
             </div>
