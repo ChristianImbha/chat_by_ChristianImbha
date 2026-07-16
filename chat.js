@@ -399,9 +399,55 @@ if (messageForm) {
 
 // fonction  SUPPRESSION D'UN MESSAGE
 
+//  PROMESSE DE CONFIRMATION PERSONNALISÉE
+// ===================================================
+function customConfirm() {
+    return new Promise((resolve) => {
+        const modal = document.getElementById("confirm-modal");
+        const okBtn = document.getElementById("confirm-ok-btn");
+        const cancelBtn = document.getElementById("confirm-cancel-btn");
+
+        if (!modal || !okBtn || !cancelBtn) {
+            // Secours si le HTML n'est pas prêt
+            resolve(confirm("Voulez-vous vraiment supprimer ce message ?"));
+            return;
+        }
+
+        // Affiche le modal avec une petite animation
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        lucide.createIcons(); // Recharge l'icône triangle d'alerte
+
+        const handleOk = () => {
+            cleanup();
+            resolve(true);
+        };
+
+        const handleCancel = () => {
+            cleanup();
+            resolve(false);
+        };
+
+        const cleanup = () => {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            okBtn.removeEventListener("click", handleOk);
+            cancelBtn.removeEventListener("click", handleCancel);
+        };
+
+        okBtn.addEventListener("click", handleOk);
+        cancelBtn.addEventListener("click", handleCancel);
+    });
+}
+
+// ===================================================
+//  SUPPRESSION D'UN MESSAGE (Avec le nouveau popup)
+// ===================================================
 async function deleteMessage(messageId) {
-    // 1. On demande directement la confirmation (pas besoin de toast d'info avant)
-    if (!confirm("Voulez-vous vraiment supprimer ce message ?")) {
+    // On appelle notre modal moderne 
+    const confirmed = await customConfirm();
+    
+    if (!confirmed) {
         showToast("Suppression annulée", "info");
         return;
     }
@@ -416,7 +462,6 @@ async function deleteMessage(messageId) {
         });
 
         if (response.ok) {
-            // 2. On affiche le toast de succès uniquement après la réussite
             showToast("Message supprimé avec succès !", "success");
             await loadMessages(activeConversationId);
         } else {
@@ -428,6 +473,79 @@ async function deleteMessage(messageId) {
     }
 }
 
+// ===================================================
+//  NOTIFICATION TOAST (Avec Toast vert centré sur l'écran)
+// ===================================================
+function showToast(message, type = "success") {
+    const container = document.getElementById("toast-container");
+    
+    // Cas spécial : Le toast vert de succès est centré au milieu de l'écran
+    if (type === "success") {
+        const centerToast = document.createElement("div");
+        
+        // Classes Tailwind pour le centrage absolu sur l'écran avec une animation de zoom (scale)
+        centerToast.className = `fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10001] flex flex-col items-center p-6 rounded-2xl shadow-2xl border text-center transition-all duration-300 transform scale-90 opacity-0 bg-emerald-50 border-emerald-200 text-emerald-800 min-w-[280px] pointer-events-auto`;
+        
+        centerToast.innerHTML = `
+            <span class="text-4xl mb-3">✅</span>
+            <div class="text-base font-bold">${message}</div>
+        `;
+
+        document.body.appendChild(centerToast);
+
+        // Animation d'entrée
+        setTimeout(() => {
+            centerToast.classList.remove("scale-90", "opacity-0");
+            centerToast.classList.add("scale-100", "opacity-100");
+        }, 50);
+
+        // Disparition automatique au bout de 2.5 secondes
+        setTimeout(() => {
+            centerToast.classList.remove("scale-100", "opacity-100");
+            centerToast.classList.add("scale-90", "opacity-0");
+            setTimeout(() => {
+                centerToast.remove();
+            }, 300);
+        }, 2500);
+        
+        return; // On s'arrête ici pour le type success
+    }
+
+    // Comportement classique en bas à droite pour "error" et "info"
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `flex items-center p-4 rounded-xl shadow-xl border text-sm font-medium transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto min-w-[250px]`;
+
+    if (type === "error") {
+        toast.className += " bg-rose-50 border-rose-200 text-rose-800";
+        toast.innerHTML = `
+            <span class="mr-2 text-lg">❌</span>
+            <div class="flex-1">${message}</div>
+        `;
+    } else { // type === "info"
+        toast.className += " bg-blue-50 border-blue-200 text-blue-800";
+        toast.innerHTML = `
+            <span class="mr-2 text-lg">ℹ️</span>
+            <div class="flex-1">${message}</div>
+        `;
+    }
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.remove("translate-y-4", "opacity-0");
+        toast.classList.add("translate-y-0", "opacity-100");
+    }, 50);
+
+    setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-4", "opacity-0");
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
 //  SUPPRESSION D'UNE CONVERSATION COMPLÈTE
 // ===================================================
 async function deleteConversation(conversationId) {
@@ -464,51 +582,74 @@ async function deleteConversation(conversationId) {
         showToast("Une erreur est survenue.", "error");
     }
 }
+
+//  LOGIQUE ET AFFICHAGE DU PROFIL CONNECTÉ
+// ===================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const profileTrigger = document.getElementById("my-profile-trigger");
+    const profileModal = document.getElementById("profile-modal");
+    const closeProfileBtn = document.getElementById("close-profile-btn");
+
+    if (profileTrigger && profileModal && closeProfileBtn) {
+        // Au clic sur l'en-tête de profil à gauche
+        profileTrigger.addEventListener("click", async () => {
+            // Affichage du modal
+            profileModal.classList.remove("hidden");
+            profileModal.classList.add("flex");
+
+            // On récupère les éléments internes du modal
+            const modalAvatar = document.getElementById("modal-profile-avatar");
+            const modalName = document.getElementById("modal-profile-name");
+            const modalId = document.getElementById("modal-profile-id");
+
+            // Optionnel : On lance un appel API frais pour être sûr d'avoir les bonnes infos
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        "x-api-key": Workspace_API_KEY
+                    }
+                });
+
+                if (response.ok) {
+                    const resJson = await response.json();
+                    const userData = resJson.data || resJson;
+
+                    if (modalName) modalName.textContent = userData.fullName || "Christian Imbha";
+                    if (modalId) modalId.textContent = `ID : ${userData.id || userData._id}`;
+                    if (modalAvatar) {
+                        modalAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${userData.id || 'default'}`;
+                    }
+                } else {
+                    // Fallback si l'API ne répond pas temporairement
+                    if (modalName) modalName.textContent = "Christian Imbha";
+                    if (modalId) modalId.textContent = `ID : ${localStorage.getItem("userId") || "Inconnu"}`;
+                }
+            } catch (error) {
+                console.error("Impossible de rafraîchir le profil dans le modal :", error);
+            }
+        });
+
+        // Fermeture du modal au clic sur le bouton Fermer
+        closeProfileBtn.addEventListener("click", () => {
+            profileModal.classList.add("hidden");
+            profileModal.classList.remove("flex");
+        });
+
+        // Fermeture si on clique en dehors de la boîte blanche
+        profileModal.addEventListener("click", (e) => {
+            if (e.target === profileModal) {
+                profileModal.classList.add("hidden");
+                profileModal.classList.remove("flex");
+            }
+        });
+    }
+});
 // Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
     loadUsers(); 
     loadMyProfile();
 });
 
-// Fonction pour afficher une superbe notification Toast
-function showToast(message, type = "success") {
-    const container = document.getElementById("toast-container");
-    if (!container) return;
-
-    const toast = document.createElement("div");
-    
-    toast.className = `flex items-center p-4 rounded-xl shadow-lg border text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0`;
-
-    if (type === "success") {
-        toast.className += " bg-emerald-50 border-emerald-200 text-emerald-800";
-        toast.innerHTML = `
-            <span class="mr-2 text-lg">✅</span>
-            <div class="flex-1">${message}</div>
-        `;
-    } else if (type === "error") {
-        toast.className += " bg-rose-50 border-rose-200 text-rose-800";
-        toast.innerHTML = `
-            <span class="mr-2 text-lg">❌</span>
-            <div class="flex-1">${message}</div>
-        `;
-    } else {
-        toast.className += " bg-blue-50 border-blue-200 text-blue-800";
-        toast.innerHTML = `
-            <span class="mr-2 text-lg">ℹ️</span>
-            <div class="flex-1">${message}</div>
-        `;
-    }
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.remove("translate-y-2", "opacity-0");
-    }, 10);
-
-    setTimeout(() => {
-        toast.classList.add("translate-y-2", "opacity-0");
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 4000);
-}
