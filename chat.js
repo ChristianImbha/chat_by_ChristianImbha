@@ -583,67 +583,51 @@ async function deleteConversation(conversationId) {
     }
 }
 
-//  LOGIQUE ET AFFICHAGE DU PROFIL CONNECTÉ
-// ===================================================
 document.addEventListener("DOMContentLoaded", () => {
     const profileTrigger = document.getElementById("my-profile-trigger");
-    const profileModal = document.getElementById("profile-modal");
-    const closeProfileBtn = document.getElementById("close-profile-btn");
+    const profileView = document.getElementById("profile-view");
+    const chatView = document.getElementById("col-right");
 
-    if (profileTrigger && profileModal && closeProfileBtn) {
-        // Au clic sur l'en-tête de profil à gauche
+    if (profileTrigger && profileView && chatView) {
         profileTrigger.addEventListener("click", async () => {
-            // Affichage du modal
-            profileModal.classList.remove("hidden");
-            profileModal.classList.add("flex");
+            // 1. On bascule l'affichage des sections
+            chatView.classList.add("hidden");
+            chatView.classList.remove("md:flex");
+            profileView.classList.remove("hidden");
+            profileView.classList.add("flex");
 
-            // On récupère les éléments internes du modal
-            const modalAvatar = document.getElementById("modal-profile-avatar");
-            const modalName = document.getElementById("modal-profile-name");
-            const modalId = document.getElementById("modal-profile-id");
-
-            // Optionnel : On lance un appel API frais pour être sûr d'avoir les bonnes infos
-            try {
-                const response = await fetch(`${API_URL}/auth/me`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                        "x-api-key": Workspace_API_KEY
+            // 2. On charge dynamiquement le HTML de ta page profil si ce n'est pas déjà fait
+            if (profileView.innerHTML.trim() === "") {
+                try {
+                    const response = await fetch("profile.html"); // Remplace par le nom exact de ton fichier
+                    if (response.ok) {
+                        const htmlContent = await response.text();
+                        
+                        // On extrait uniquement le contenu utile (ex: le <main> ou la structure centrale)
+                        profileView.innerHTML = htmlContent;
+                        
+                        // Si tu utilises des icônes Lucide dans ta page profil :
+                        if (window.lucide) {
+                            lucide.createIcons();
+                        }
+                    } else {
+                        profileView.innerHTML = "<p class='p-6 text-red-500'>Impossible de charger le profil.</p>";
                     }
-                });
-
-                if (response.ok) {
-                    const resJson = await response.json();
-                    const userData = resJson.data || resJson;
-
-                    if (modalName) modalName.textContent = userData.fullName || "Christian Imbha";
-                    if (modalId) modalId.textContent = `ID : ${userData.id || userData._id}`;
-                    if (modalAvatar) {
-                        modalAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${userData.id || 'default'}`;
-                    }
-                } else {
-                    // Fallback si l'API ne répond pas temporairement
-                    if (modalName) modalName.textContent = "Christian Imbha";
-                    if (modalId) modalId.textContent = `ID : ${localStorage.getItem("userId") || "Inconnu"}`;
+                } catch (error) {
+                    console.error("Erreur de chargement du profil :", error);
                 }
-            } catch (error) {
-                console.error("Impossible de rafraîchir le profil dans le modal :", error);
             }
         });
+    }
+});
 
-        // Fermeture du modal au clic sur le bouton Fermer
-        closeProfileBtn.addEventListener("click", () => {
-            profileModal.classList.add("hidden");
-            profileModal.classList.remove("flex");
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const profileTrigger = document.getElementById("my-profile-trigger");
 
-        // Fermeture si on clique en dehors de la boîte blanche
-        profileModal.addEventListener("click", (e) => {
-            if (e.target === profileModal) {
-                profileModal.classList.add("hidden");
-                profileModal.classList.remove("flex");
-            }
+    if (profileTrigger) {
+        profileTrigger.addEventListener("click", () => {
+            // Redirige directement l'utilisateur vers ta page profil existante
+            window.location.href = "Profil.html"; 
         });
     }
 });
