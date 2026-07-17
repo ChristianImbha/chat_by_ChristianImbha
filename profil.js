@@ -1,19 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Récupération des données réelles dans le localStorage
+    // 1. Récupération des infos utilisateur stockées lors du login
     const savedName = localStorage.getItem("userName");
     const savedEmail = localStorage.getItem("userEmail");
-    const savedAvatar = localStorage.getItem("userAvatar");
     const savedUserId = localStorage.getItem("userId");
+    const savedAvatar = localStorage.getItem("userAvatar");
 
-    // 2. Ciblage des éléments de ta page (basé sur ton interface)
-    // On cible le h1 du nom (qui contient "Alex Rivera")
-    const nameHeading = document.querySelector("h1.text-gray-900, .font-bold.text-gray-900"); 
-    // On cible le paragraphe de l'email
-    const emailParagraph = document.querySelector("p.text-gray-500, .text-sm.text-gray-500");
-    // On cible l'image de l'avatar
-    const avatarImg = document.querySelector("img[alt='Avatar'], .rounded-full.object-cover");
+    // 2. Ciblage des éléments de la page
+    const nameHeading = document.getElementById("profile-name");
+    const emailParagraph = document.getElementById("profile-email");
+    const usernameSpan = document.getElementById("profile-username");
+    const avatarImg = document.getElementById("profile-page-avatar");
+    const logoutBtn = document.getElementById("logout-btn");
 
-    // 3. Injection des données dynamiques
+    // 3. Injection dynamique des données si elles existent
     if (nameHeading && savedName) {
         nameHeading.textContent = savedName;
     }
@@ -22,15 +21,32 @@ document.addEventListener("DOMContentLoaded", () => {
         emailParagraph.textContent = savedEmail;
     }
 
+    // Affiche l'ID de l'utilisateur ou une valeur par défaut s'il est vide
+    if (usernameSpan) {
+        usernameSpan.textContent = savedUserId ? savedUserId : "Non défini (Local)";
+    }
+
+    // Gestion de la photo de profil (utilise un avatar Robot par défaut indexé sur l'ID)
     if (avatarImg) {
-        // Si tu as un avatar personnalisé dans l'API, on l'affiche, sinon on génère un robot Dicebear propre avec ton ID
         if (savedAvatar && savedAvatar !== "undefined" && savedAvatar !== "") {
             avatarImg.src = savedAvatar;
         } else {
-            const userId = savedUserId || "default";
-            avatarImg.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${userId}`;
+            const seed = savedUserId || "default";
+            avatarImg.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
         }
-        // Petit correctif de sécurité pour l'affichage de l'image
-        avatarImg.classList.add("w-24", "h-24", "rounded-full", "object-cover");
+    }
+
+    // 4. Gestion du bouton Déconnexion avec redirection
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            
+            // Nettoyage complet des jetons et de la session actuelle
+            localStorage.clear();
+            sessionStorage.clear();
+
+            // Redirection immédiate vers la page login.html
+            window.location.href = "login.html";
+        });
     }
 });
