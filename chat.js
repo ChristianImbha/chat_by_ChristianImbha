@@ -210,7 +210,7 @@ async function handleStartChat(targetUserId, displayName, displayAvatar) {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
                 "x-api-key": Workspace_API_KEY
-            }
+            },
             body: JSON.stringify({
                 type: "private",
                 participantIds: [targetUserId],
