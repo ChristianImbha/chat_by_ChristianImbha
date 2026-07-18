@@ -67,6 +67,7 @@
             <div class="flex flex-col items-center text-center mb-8">
                 <div class="relative group cursor-pointer" id="change-avatar-trigger">
                     <img id="profile-page-avatar" src="https://via.placeholder.com/120" alt="Avatar" class="w-28 h-28 rounded-full border-4 border-white object-cover shadow-lg group-hover:opacity-80 transition">
+                    
                     <!-- Icône overlay au survol -->
                     <div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition">
                         <i data-lucide="camera" class="w-6 h-6 text-white"></i>
@@ -148,11 +149,13 @@
             </div>
 
             <div class="w-full max-w-md flex flex-col gap-3 items-center mb-12">
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm transition">
-                    <i data-lucide="pen-tool" class="w-4 h-4"></i>
-                    Edit Profile
+                 <!-- Bouton Edite profi -->
+                <div class="w-full max-w-md flex flex-col gap-3 items-center mb-4">
+                <button id="edit-profile-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center">
+                <i data-lucide="pen-tool" class="w-4 h-4 mr-2"></i>
+                Edit Profile
                 </button>
-                
+                </div>
                 <button class="w-full bg-[#e2e8f0] hover:bg-slate-300 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition">
                     <i data-lucide="key-round" class="w-4 h-4"></i>
                     Change Password
