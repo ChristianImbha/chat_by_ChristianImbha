@@ -122,7 +122,7 @@ async function loadMyProfile() {
                 myAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${myId}`;
             }
             
-            // Mise à jour de l'avatar du haut "Mon Profil" via la variable globale
+            // Mise à jour de l'avatar du haut "Mon Profil" 
             if (sidebarAvatar) {
                 sidebarAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${myId}`;
             }
@@ -143,6 +143,7 @@ async function loadMyProfile() {
             sidebarAvatar.src = localStorage.getItem("userAvatar") || "https://via.placeholder.com/40";
         }
     }
+    
 }
 
 // ===================================================
