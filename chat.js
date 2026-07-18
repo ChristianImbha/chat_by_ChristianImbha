@@ -11,6 +11,7 @@ if (!token) {
 }
 
 let activeConversationId = null;
+let messageInterval = null; // Permet de stocker le rafraîchissement automatique
 
 // Ciblage des éléments du DOM
 const myAvatar = document.getElementById("active-user-avatar"); 
@@ -121,14 +122,10 @@ async function loadMyProfile() {
                 myAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${myId}`;
             }
             
-            // ===================================================
-            //Mise à jour de l'avatar du haut "Mon Profil"
-            // ===================================================
-            const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+            // Mise à jour de l'avatar du haut "Mon Profil" via la variable globale
             if (sidebarAvatar) {
-                sidebarAvatar.src = userData.avatarUrl || "https://via.placeholder.com/40";
+                sidebarAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${myId}`;
             }
-            // ===================================================
             
             // Stockage des informations pour la page Profil.html
             localStorage.setItem("userAvatar", userData.avatarUrl || "");
@@ -142,7 +139,6 @@ async function loadMyProfile() {
         if (myName) myName.textContent = localName || localId || "Utilisateur";
         
         // Sécurité en cas d'erreur réseau : on tente de charger depuis le localStorage
-        const sidebarAvatar = document.getElementById('sidebar-user-avatar');
         if (sidebarAvatar) {
             sidebarAvatar.src = localStorage.getItem("userAvatar") || "https://via.placeholder.com/40";
         }
@@ -269,8 +265,17 @@ async function selectConversation(conv) {
         }
     });
 
+    // Charger les messages immédiatement
     await loadMessages(conv.id);
     showChatColumn();
+
+    // Mettre en place un rafraîchissement automatique toutes les 4 secondes (Polling)
+    if (messageInterval) clearInterval(messageInterval);
+    messageInterval = setInterval(() => {
+        if (activeConversationId) {
+            loadMessages(activeConversationId);
+        }
+    }, 4000);
 }
 
 // ===================================================
@@ -297,6 +302,10 @@ async function loadMessages(conversationId) {
 
 function renderMessages(messagesData) {
     if (!messagesContainer) return;
+    
+    // Garder une trace du scroll utilisateur avant de vider le conteneur
+    const isAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 100;
+
     messagesContainer.innerHTML = ""; 
 
     let messages = messagesData?.data?.messages || messagesData?.data || messagesData?.messages || messagesData;
@@ -343,7 +352,10 @@ function renderMessages(messagesData) {
         messagesContainer.appendChild(messageBlock);
     });
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // Auto-scroll uniquement si l'utilisateur était déjà en bas (évite de le couper s'il lit un ancien message)
+    if (isAtBottom) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 }
 
 if (messageForm) {
@@ -368,6 +380,7 @@ if (messageForm) {
 
             if (response.ok) {
                 await loadMessages(activeConversationId);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Force le scroll après envoi
             } else {
                 alert("Erreur lors de l'envoi du message.");
             }
@@ -513,6 +526,7 @@ async function deleteConversation(conversationId) {
         if (response.ok) {
             showToast("Conversation supprimée.", "success");
             activeConversationId = null;
+            if (messageInterval) clearInterval(messageInterval); // Arrête le polling
             if (chatPanel) chatPanel.classList.add("hidden");
             await loadUsers();
             showListColumn();
@@ -534,6 +548,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (profileTrigger) {
         profileTrigger.addEventListener("click", () => {
             window.location.href = "Profil.html"; 
+        });
+    }
+
+    // ÉCOUTEUR SUR LE BOUTON DE SUPPRESSION (Ajouté)
+    if (deleteConvBtn) {
+        deleteConvBtn.addEventListener("click", () => {
+            if (activeConversationId) {
+                deleteConversation(activeConversationId);
+            } else {
+                showToast("Aucune conversation active à supprimer.", "info");
+            }
         });
     }
 
