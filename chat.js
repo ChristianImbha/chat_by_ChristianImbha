@@ -20,6 +20,7 @@ const messageInput = document.getElementById("message-input");
 const messagesContainer = document.getElementById("messages-container");
 const chatPanel = document.getElementById("chat-panel");
 const deleteConvBtn = document.getElementById("delete-conv-btn");
+const sidebarAvatar = document.getElementById('sidebar-user-avatar');
 
 const activeChatTitle = document.getElementById("active-chat-title");
 const activeChatStatus = document.getElementById("active-chat-status");
@@ -120,6 +121,15 @@ async function loadMyProfile() {
                 myAvatar.src = userData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${myId}`;
             }
             
+            // ===================================================
+            //Mise à jour de l'avatar du haut "Mon Profil"
+            // ===================================================
+            const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+            if (sidebarAvatar) {
+                sidebarAvatar.src = userData.avatarUrl || "https://via.placeholder.com/40";
+            }
+            // ===================================================
+            
             // Stockage des informations pour la page Profil.html
             localStorage.setItem("userAvatar", userData.avatarUrl || "");
             localStorage.setItem("userName", userData.fullName || "");
@@ -130,6 +140,12 @@ async function loadMyProfile() {
         const localId = localStorage.getItem("userId");
         const localName = localStorage.getItem("userName");
         if (myName) myName.textContent = localName || localId || "Utilisateur";
+        
+        // Sécurité en cas d'erreur réseau : on tente de charger depuis le localStorage
+        const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+        if (sidebarAvatar) {
+            sidebarAvatar.src = localStorage.getItem("userAvatar") || "https://via.placeholder.com/40";
+        }
     }
 }
 

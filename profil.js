@@ -82,7 +82,7 @@ avatarInput.addEventListener('change', async function(event) {
 });
 
 /**
- * 2. SOUMISSION DU FORMULAIRE ET MISE À JOUR DE L'API
+ * 2. SOUMISSION DU FORMULAIRE ET MISE À ZONE DE L'API
  */
 profileForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -91,7 +91,7 @@ profileForm.addEventListener('submit', async (event) => {
     const nomUtilisateur = document.getElementById('profile-name').value;
     const statutBio = document.getElementById('profile-status').value;
 
-    // Si aucune nouvelle image n'a été uploadée sur Cloudinary, on garde l'ancienne (ou une valeur par défaut)
+    // Si aucune nouvelle image n'a été uploadée sur Cloudinary, on garde l'ancienne
     const urlPhotoFinale = urlImageCloudinary || profileAvatar.src;
 
     showAlert("Enregistrement du profil...", "loading");
@@ -106,9 +106,9 @@ profileForm.addEventListener('submit', async (event) => {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                name: nomUtilisateur,    // Envoie du nom modifié
-                avatarUrl: urlPhotoFinale, // Envoie de l'URL Cloudinary ou actuelle
-                bio: statutBio           // Envoie du statut/bio
+                fullName: nomUtilisateur,   // Modifié : 'name' devient 'fullName' pour correspondre à Prisma
+                avatarUrl: urlPhotoFinale,  // Envoi de l'URL Cloudinary ou actuelle
+                bio: statutBio              // Envoi du statut/bio
             })
         });
 
@@ -130,4 +130,20 @@ profileForm.addEventListener('submit', async (event) => {
     } finally {
         submitBtn.disabled = false;
     }
+    // ==========================================
+// GESTION DU THEME SOMBRE (DARK MODE)
+// ==========================================
+const themeToggleBtn = document.getElementById('theme-toggle');
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+}
 });
