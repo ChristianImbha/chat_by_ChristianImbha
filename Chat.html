@@ -4,11 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class' 
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <script>
+    // Ce code s'exécute immédiatement avant le rendu de la page
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+</script>
 </head>
 <body class="flex h-screen w-full bg-slate-50 overflow-hidden font-sans antialiased text-gray-800">
     
@@ -44,13 +58,18 @@
                 </span>
             </button>
         </div>
-        <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
-            <i data-lucide="settings" class="w-5 h-5 md:w-6 md:h-6"></i>
-            <!-- Bulle d'information au survol -->
-            <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
-                Cette fonctionnalité n'est pas disponible pour l'instant
+        <!-- Bouton de bascule de thème -->
+        <button id="theme-toggle" class="p-3 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl transition relative group flex items-center justify-center">
+            <!-- Icône Lune (visible en mode clair) -->
+            <i data-lucide="moon" class="w-6 h-6 dark:hidden"></i>
+            <!-- Icône Soleil (visible en mode sombre) -->
+            <i data-lucide="sun" class="w-6 h-6 hidden dark:block text-amber-400"></i>
+            
+            <!-- Info au survol -->
+            <span class="absolute left-16 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
+                Changer le thème
             </span>
-       </button>
+        </button>
     </aside>
 
     <!-- SECTION GAUCHE : Liste des conversations (Prend tout l'écran sur mobile) -->

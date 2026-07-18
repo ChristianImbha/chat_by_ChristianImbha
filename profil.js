@@ -109,6 +109,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const themeToggleBtn = document.getElementById('theme-toggle');
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        // Si le mode sombre est actif, on l'enlève et on enregistre 'light'
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            // Sinon, on l'ajoute et on enregistre 'dark'
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+}
+
     // 5. Gestion du bouton d'édition (redirection sans déconnexion)
     if (EditeProfilBtn) {
         EditeProfilBtn.addEventListener("click", (e) => {
