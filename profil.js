@@ -1,144 +1,133 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("token");
+// Configuration Cloudinary (Remplace ces valeurs par les tiennes si nécessaire)
+const CLOUD_NAME = 'dctgg4xw'; 
+const UPLOAD_PRESET = 'ciu7uafl'; 
+const API_KEY_KADEA = "wksp_c3e1fb2ba091b7e4a9697b611e1d7168"; 
 
-    if (!token) {
-        window.location.href = "login.html";
+// Ciblage des éléments HTML
+const avatarInput = document.getElementById('avatar-input');
+const profileAvatar = document.getElementById('profile-page-avatar');
+const profileForm = document.getElementById('profile-form');
+const alertBox = document.getElementById('alert-box');
+const submitBtn = profileForm.querySelector('button[type="submit"]');
+
+// Variable globale pour stocker l'URL renvoyée par Cloudinary
+let urlImageCloudinary = "";
+
+/**
+ * Fonction pour afficher des messages de statut propres à l'écran
+ */
+function showAlert(message, type = 'success') {
+    alertBox.textContent = message;
+    alertBox.className = "w-full p-3 rounded-xl text-xs md:text-sm text-center font-medium mt-4 block";
+    
+    if (type === 'success') {
+        alertBox.classList.add('bg-green-50', 'text-green-600', 'dark:bg-green-950/30', 'dark:text-green-400');
+    } else if (type === 'loading') {
+        alertBox.classList.add('bg-blue-50', 'text-blue-600', 'dark:bg-blue-950/30', 'dark:text-blue-400');
+    } else {
+        alertBox.classList.add('bg-red-50', 'text-red-600', 'dark:bg-red-950/30', 'dark:text-red-400');
+    }
+}
+
+/**
+ * 1. ÉCOUTEUR DU CHANGEMENT DE PHOTO
+ */
+avatarInput.addEventListener('change', async function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Vérification du type de fichier
+    if (!file.type.startsWith('image/')) {
+        showAlert("Le fichier doit être une image valide (JPG ou PNG).", "error");
+        avatarInput.value = '';
         return;
     }
 
-    // 1. Décodage du token pour la clé workspace
-    let workspaceKey = "";
+    // A. Affichage local instantané pour l'UX
+    const localUrl = URL.createObjectURL(file);
+    profileAvatar.src = localUrl;
+
+    // B. Désactivation du bouton de soumission pendant l'envoi à Cloudinary
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    showAlert("Téléchargement de l'image en cours...", "loading");
+
+    // C. Envoi vers Cloudinary
     try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const userData = JSON.parse(window.atob(base64));
-        workspaceKey = userData.workspaceKey; 
-    } catch (e) {
-        console.error("Impossible de lire la clé workspace", e);
-    }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
 
-    // 2. Ciblage des éléments HTML
-    const nameHeading = document.getElementById("profile-name");
-    const emailParagraph = document.getElementById("profile-email");
-    const usernameSpan = document.getElementById("profile-username");
-    const avatarImg = document.getElementById("profile-page-avatar");
-    const logoutBtn = document.getElementById("logout-btn");
-    const EditeProfilBtn = document.getElementById("edit-profile-btn");
-    const avatarInput = document.getElementById("avatar-input"); // Ciblage de l'input caché
-
-    // Configuration Cloudinary (Ton Cloud Name est déjà intégré !)
-    const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dctgg4xw/image/upload";
-    const CLOUDINARY_PRESET = "ciu7uafl";
-    const API_URL = "https://kadea-chat-api.onrender.com"; 
-
-    // 3. Récupération initiale des infos du profil
-    fetch(`${API_URL}/auth/me`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-            "x-api-key": workspaceKey
-        }
-    })
-    .then(response => response.json())
-    .then(res => {
-        const user = res.data && res.data.user;
-        if (user) {
-            if (nameHeading) nameHeading.textContent = user.fullName || "Utilisateur";
-            if (emailParagraph) emailParagraph.textContent = user.email || "Non communiqué";
-            if (usernameSpan) usernameSpan.textContent = user.id || "N/A";
-
-            // Si l'utilisateur a déjà une photo sur Cloudinary, on l'affiche. Sinon, le robot.
-            if (avatarImg) {
-                avatarImg.src = user.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`;
-            }
-        }
-    })
-    .catch(error => console.error("Erreur chargement profil :", error));
-
-    // 4. LE CODE D'IMPORTATION IMAGE (Placé ici, bien au chaud)
-    if (avatarInput) {
-        avatarInput.addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            console.log("Image prête à être envoyée vers Cloudinary !", file);
-            
-            // Effet visuel d'attente
-            if (avatarImg) avatarImg.style.opacity = "0.5";
-
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("upload_preset", CLOUDINARY_PRESET);
-
-            try {
-                // Envoi à Cloudinary
-                const cloudRes = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
-                if (!cloudRes.ok) throw new Error("Échec upload Cloudinary");
-
-                const cloudData = await cloudRes.json();
-                const secureUrl = cloudData.secure_url; 
-                console.log("Lien Cloudinary obtenu :", secureUrl);
-
-                // Sauvegarde de l'URL sur l'API de Kadea
-                // Note : Vérifie sur ton Swagger s'il s'agit de PUT ou PATCH pour modifier le profil
-                const apiRes = await fetch(`${API_URL}/auth/me`, {
-                    method: "PUT", 
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                        "x-api-key": workspaceKey
-                    },
-                    body: JSON.stringify({ avatarUrl: secureUrl })
-                });
-
-                if (apiRes.ok) {
-                    if (avatarImg) {
-                        avatarImg.src = secureUrl; // Met à jour l'image à l'écran
-                        avatarImg.style.opacity = "1";
-                    }
-                    alert("Photo mise à jour !");
-                } else {
-                    throw new Error("Impossible de lier l'image au compte");
-                }
-
-            } catch (err) {
-                console.error("Erreur téléversement :", err);
-                if (avatarImg) avatarImg.style.opacity = "1";
-            }
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
         });
+
+        if (!response.ok) throw new Error("Échec de l'envoi Cloudinary");
+
+        const data = await response.json();
+        
+        // Stockage de l'URL sécurisée finale
+        urlImageCloudinary = data.secure_url;
+        showAlert("Image prête ! N'oubliez pas d'enregistrer vos modifications.", "success");
+
+    } catch (error) {
+        console.error("Erreur Cloudinary :", error);
+        showAlert("Erreur lors du téléchargement de la photo. Réessayez.", "error");
+    } finally {
+        // Réactivation du bouton d'enregistrement
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     }
+});
 
-    const themeToggleBtn = document.getElementById('theme-toggle');
+/**
+ * 2. SOUMISSION DU FORMULAIRE ET MISE À JOUR DE L'API
+ */
+profileForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-        // Si le mode sombre est actif, on l'enlève et on enregistre 'light'
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        } else {
-            // Sinon, on l'ajoute et on enregistre 'dark'
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
+    const token = localStorage.getItem('token');
+    const nomUtilisateur = document.getElementById('profile-name').value;
+    const statutBio = document.getElementById('profile-status').value;
+
+    // Si aucune nouvelle image n'a été uploadée sur Cloudinary, on garde l'ancienne (ou une valeur par défaut)
+    const urlPhotoFinale = urlImageCloudinary || profileAvatar.src;
+
+    showAlert("Enregistrement du profil...", "loading");
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch('https://kadea-chat-api.onrender.com/users/me', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_KEY_KADEA,
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                name: nomUtilisateur,    // Envoie du nom modifié
+                avatarUrl: urlPhotoFinale, // Envoie de l'URL Cloudinary ou actuelle
+                bio: statutBio           // Envoie du statut/bio
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Erreur lors de la mise à jour");
         }
-    });
-}
 
-    // 5. Gestion du bouton d'édition (redirection sans déconnexion)
-    if (EditeProfilBtn) {
-        EditeProfilBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            window.location.href = "EditProfil.html";
-        });
-    }
+        showAlert("Profil mis à jour avec succès !", "success");
 
-    // 6. Gestion du bouton Déconnexion
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = "login.html";
-        });
+        // Optionnel : Redirection après 1.5 seconde vers la page chat
+        setTimeout(() => {
+            window.location.href = "chat.html";
+        }, 1500);
+
+    } catch (error) {
+        console.error("Erreur API :", error);
+        showAlert(error.message || "Impossible de mettre à jour le profil.", "error");
+    } finally {
+        submitBtn.disabled = false;
     }
 });
