@@ -6,11 +6,11 @@
     <title>Profil Kadea-Chat</title>
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-</script>
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <!-- Chargement des bibliothèques de styles et d'icônes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,27 +24,25 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-[#f4f6fa] text-[#1e293b] flex flex-col md:flex-row h-screen overflow-hidden">
+<body class="bg-[#f4f6fa] dark:bg-slate-900 text-[#1e293b] dark:text-slate-100 flex flex-col md:flex-row h-screen overflow-hidden transition-colors duration-300">
 
     <!-- Barre latérale / Menu Bas (Responsive) -->
-    <!-- md:flex -> À partir d'un écran d'ordinateur, affichage vertical sur le côté -->
-    <!-- max-md:fixed max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:h-16 -> Sur mobile, barre fixe tout en bas -->
-    <aside class="w-full md:w-20 bg-white border-t md:border-t-0 md:border-r border-slate-200 flex flex-row md:flex-col justify-between items-center px-6 py-2 md:py-6 flex-shrink-0 fixed bottom-0 left-0 right-0 h-16 md:relative md:h-full z-50 shadow-lg md:shadow-none">
+    <aside class="w-full md:w-20 bg-white dark:bg-slate-950 border-t md:border-t-0 md:border-r border-slate-200 dark:border-slate-800 flex flex-row md:flex-col justify-between items-center px-6 py-2 md:py-6 flex-shrink-0 fixed bottom-0 left-0 right-0 h-16 md:relative md:h-full z-50 shadow-lg md:shadow-none transition-colors duration-300">
         
         <div class="flex flex-row md:flex-col items-center justify-around md:justify-start gap-0 md:gap-8 w-full">
-            <span class="text-blue-700 font-bold text-lg md:text-xl tracking-tight hidden md:block">forum</span>
+            <span class="text-blue-700 dark:text-blue-500 font-bold text-lg md:text-xl tracking-tight hidden md:block">forum</span>
             <nav class="flex flex-row md:flex-col gap-2 md:gap-6 w-full justify-around md:items-center">
                 <!-- Redirection vers le chat principal -->
-                <a href="chat.html" class="p-2.5 md:p-3 text-slate-400 hover:text-blue-600 rounded-xl transition flex items-center justify-center">
+                <a href="chat.html" class="p-2.5 md:p-3 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition flex items-center justify-center">
                     <i data-lucide="message-square" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </a>
-                <button class="p-2.5 md:p-3 text-slate-400 hover:text-slate-600 rounded-xl transition flex items-center justify-center">
+                <button class="p-2.5 md:p-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-xl transition flex items-center justify-center">
                     <i data-lucide="phone" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </button>
-                <a href="Profil.html" class="p-2.5 md:p-3 text-blue-600 bg-blue-50 rounded-xl transition flex items-center justify-center">
+                <a href="Profil.html" class="p-2.5 md:p-3 text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-400 rounded-xl transition flex items-center justify-center">
                     <i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </a>
-                <button class="p-2.5 md:p-3 text-slate-400 hover:text-slate-600 rounded-xl transition flex items-center justify-center hidden sm:flex">
+                <button class="p-2.5 md:p-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-xl transition flex items-center justify-center hidden sm:flex">
                     <i data-lucide="calendar" class="w-5 h-5 md:w-6 md:h-6"></i>
                 </button>
             </nav>
@@ -54,30 +52,29 @@
         <div class="flex flex-row md:flex-col items-center gap-4 md:gap-6 hidden md:flex">
             <div class="relative w-full flex justify-center">
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r hidden md:block"></div>
-                <button class="p-3 text-blue-600 rounded-xl">
+                <button class="p-3 text-blue-600 dark:text-blue-400 rounded-xl">
                     <i data-lucide="settings" class="w-6 h-6"></i>
                 </button>
             </div>
-            <button class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition shadow-sm">
+            <button class="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition shadow-sm">
                 <i data-lucide="plus" class="w-5 h-5"></i>
             </button>
         </div>
     </aside>
 
     <!-- Conteneur principal du Profil -->
-    <!-- pb-16 md:pb-0 -> Laisse de l'espace en bas sur mobile pour ne pas être caché par la barre de navigation -->
-    <main class="flex flex-1 flex-col h-full bg-gray-50 pb-16 md:pb-0 overflow-hidden" id="chat-panel">
+    <main class="flex flex-1 flex-col h-full bg-slate-50 dark:bg-slate-900 pb-16 md:pb-0 overflow-hidden transition-colors duration-300" id="chat-panel">
         
         <!-- En-tête -->
-        <div class="flex items-center justify-between bg-gray-100 p-3.5 border-b border-gray-200 shadow-sm flex-shrink-0">
+        <div class="flex items-center justify-between bg-white dark:bg-slate-950 p-3.5 border-b border-slate-200 dark:border-slate-800 shadow-sm flex-shrink-0 transition-colors duration-300">
             <div class="flex items-center space-x-3">
-                <a href="chat.html" class="p-1 text-gray-500 hover:text-blue-600 rounded-lg transition">
+                <a href="chat.html" class="p-1 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>                     
-                <h1 id="active-chat-title" class="font-bold text-blue-600 text-xs md:text-sm tracking-wide">Kadea-Chat • Mon Profil</h1>                      
+                <h1 id="active-chat-title" class="font-bold text-blue-600 dark:text-blue-500 text-xs md:text-sm tracking-wide">Kadea-Chat • Mon Profil</h1>                      
             </div>
             <div>
-                <a href="chat.html" class="text-[11px] md:text-xs bg-white text-gray-600 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:text-blue-600 transition shadow-sm font-semibold">
+                <a href="chat.html" class="text-[11px] md:text-xs bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 transition shadow-sm font-semibold">
                     Retour
                 </a>
             </div>
@@ -85,21 +82,21 @@
 
         <!-- Zone du formulaire centrée -->
         <div class="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col items-center justify-start md:justify-center">
-            <div class="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-slate-200 w-full max-w-md flex flex-col items-center my-auto">
+            <div class="bg-white dark:bg-slate-800 p-5 md:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 w-full max-w-md flex flex-col items-center my-auto transition-colors duration-300">
                 
                 <!-- Section Avatar dynamique -->
                 <div class="flex flex-col items-center mb-5 md:mb-6">
                     <div class="relative group mb-3">
                         <!-- L'image de l'avatar -->
-                        <img id="profile-page-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=default" alt="Avatar" class="w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-white object-cover shadow-lg group-hover:opacity-80 transition">
+                        <img id="profile-page-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=default" alt="Avatar" class="w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-white dark:border-slate-700 object-cover shadow-lg group-hover:opacity-80 transition">
                         
-                        <!-- Icône overlay décorative au survol -->
+                        <!-- Icône overlay decorative au survol -->
                         <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition pointer-events-none">
                             <i data-lucide="camera" class="w-5 h-5 md:w-6 md:h-6 text-white"></i>
                         </div>
                     </div>
 
-                    <!-- Le SEUL et unique bouton visible pour déclencher l'importation -->
+                    <!-- Bouton pour déclencher l'importation -->
                     <label for="avatar-input" class="cursor-pointer inline-flex items-center justify-center bg-blue-600 text-white font-medium px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition duration-200 shadow-sm">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -108,28 +105,28 @@
                         Changer la photo
                     </label>
 
-                    <!-- Le SEUL input de fichier masqué sous le label -->
+                    <!-- Input de fichier masqué -->
                     <input type="file" id="avatar-input" accept="image/*" class="hidden">
                 </div>
                 
                 <!-- Formulaire d'informations -->
                 <form id="profile-form" class="space-y-4 md:space-y-5 w-full">
                     <div>
-                        <label class="block text-xs md:text-sm font-semibold text-blue-600 mb-1">Votre nom</label>
-                        <div class="flex items-center border-b-2 border-gray-200 focus-within:border-blue-600 py-1.5 transition">
+                        <label class="block text-xs md:text-sm font-semibold text-blue-600 dark:text-blue-400 mb-1">Votre nom</label>
+                        <div class="flex items-center border-b-2 border-slate-200 dark:border-slate-700 focus-within:border-blue-600 dark:focus-within:border-blue-400 py-1.5 transition">
                             <input type="text" id="profile-name" placeholder="Ex: Christian Imbha" required
-                                class="appearance-none bg-transparent border-none w-full text-gray-700 mr-2 py-1 px-1 text-sm md:text-base leading-tight focus:outline-none">
-                            <i class="fas fa-pen text-gray-400 text-xs md:text-sm"></i>
+                                class="appearance-none bg-transparent border-none w-full text-slate-700 dark:text-slate-200 mr-2 py-1 px-1 text-sm md:text-base leading-tight focus:outline-none">
+                            <i class="fas fa-pen text-slate-400 dark:text-slate-500 text-xs md:text-sm"></i>
                         </div>
-                        <p class="text-[11px] text-gray-400 mt-1">Ce nom sera visible par vos contacts Kadea.</p>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Ce nom sera visible par vos contacts Kadea.</p>
                     </div>
 
                     <div>
-                        <label class="block text-xs md:text-sm font-semibold text-blue-600 mb-1">Actu / Bio</label>
-                        <div class="flex items-center border-b-2 border-gray-200 focus-within:border-blue-600 py-1.5 transition">
+                        <label class="block text-xs md:text-sm font-semibold text-blue-600 dark:text-blue-400 mb-1">Actu / Bio</label>
+                        <div class="flex items-center border-b-2 border-slate-200 dark:border-slate-700 focus-within:border-blue-600 dark:focus-within:border-blue-400 py-1.5 transition">
                             <input type="text" id="profile-status" placeholder="Disponible"
-                                class="appearance-none bg-transparent border-none w-full text-gray-700 mr-2 py-1 px-1 text-sm md:text-base leading-tight focus:outline-none">
-                            <i class="fas fa-pen text-gray-400 text-xs md:text-sm"></i>
+                                class="appearance-none bg-transparent border-none w-full text-slate-700 dark:text-slate-200 mr-2 py-1 px-1 text-sm md:text-base leading-tight focus:outline-none">
+                            <i class="fas fa-pen text-slate-400 dark:text-slate-500 text-xs md:text-sm"></i>
                         </div>
                     </div>
 
