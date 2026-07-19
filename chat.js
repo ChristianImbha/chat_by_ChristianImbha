@@ -26,8 +26,9 @@ function getCleanAvatar(url, fullName = "Utilisateur") {
         url.trim() === "" || 
         url.includes("placeholder.com")
     ) {
+
         //les initiales du nom de l'utilisateur
-        return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0D8ABC&color=fff&size=128`;
+       return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0D8ABC&color=fff&size=128`;
     }
     return url;
 }
@@ -87,10 +88,9 @@ if (backBtn) {
 }
 
 window.addEventListener("resize", () => {
-    // gestion de la largeur du clavier Si la largeur n'a pas changé
+
+    // Si la largeur n'a pas changé, on ne fait rien
     if (window.innerWidth === lastWidth) return;
-    
-    // Met à jour la dernière largeur connue
     lastWidth = window.innerWidth;
 
     if (window.innerWidth >= 768) {
@@ -177,7 +177,7 @@ async function loadMyProfile() {
         const localName = localStorage.getItem("userName");
         if (myName) myName.textContent = localName || localId || "Utilisateur";
         
-        // Sécurité en cas d'erreur réseau : on tente de charger depuis le localStorage
+        // Sécurité en cas d'erreur réseau
         if (sidebarAvatar) {
             sidebarAvatar.src = getCleanAvatar(localStorage.getItem("userAvatar"), localName || "Mon Profil");
         }
@@ -206,13 +206,15 @@ async function loadUsers() {
 
         let currentUserId = localStorage.getItem("userId");
         if (currentUserId) {
-            currentUserId = currentUserId.replace(/['"]+/g, '').trim();
+            currentUserId = String(currentUserId).replace(/['"]+/g, '').trim();
         }
 
-        // Filtrer pour ne pas s'afficher soi-même dans la liste
+        // --- FILTRAGE SÉCURISÉ ---
         const filteredUsers = usersArray.filter(user => {
-            if (!user.id) return true; 
-            const cleanUserId = String(user.id).replace(/['"]+/g, '').trim();
+            const userId = user.id || user._id;
+            if (!userId) return true; 
+            
+            const cleanUserId = String(userId).replace(/['"]+/g, '').trim();
             return cleanUserId !== currentUserId;
         });
 
@@ -234,11 +236,12 @@ function renderUsersList(users) {
     }
 
     users.forEach(user => {
+        const userId = user.id || user._id;
         const userElement = document.createElement("div");
-        userElement.dataset.conversationId = user.id; 
-        userElement.className = `conversation-item flex items-center space-x-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer rounded-xl transition text-slate-600 dark:text-slate-300`;
-        
+       
         // Nettoyage de l'avatar pour chaque utilisateur de la liste
+        userElement.dataset.conversationId = userId; 
+        userElement.className = `conversation-item flex items-center space-x-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer rounded-xl transition text-slate-600 dark:text-slate-300`;
         const displayAvatar = getCleanAvatar(user.avatarUrl, user.fullName || 'Utilisateur');
 
         userElement.innerHTML = `
@@ -249,7 +252,7 @@ function renderUsersList(users) {
             </div>
         `;
 
-        userElement.addEventListener("click", () => handleStartChat(user.id, user.fullName, displayAvatar));
+        userElement.addEventListener("click", () => handleStartChat(userId, user.fullName, displayAvatar));
         roomsContainer.appendChild(userElement);
     });
 }
@@ -280,7 +283,9 @@ async function handleStartChat(targetUserId, displayName, displayAvatar) {
                 id: conversationId,
                 name: displayName,
                 avatar: displayAvatar,
-                targetUserId: targetUserId // Stocké pour cibler l'élément dans la liste
+
+        targetUserId: targetUserId // Stocké pour cibler l'élément dans la liste
+
             });
         } else {
             console.error("Impossible de lire l'ID de la conversation.");
@@ -292,14 +297,13 @@ async function handleStartChat(targetUserId, displayName, displayAvatar) {
 
 async function selectConversation(conv) {
     activeConversationId = conv.id;
-    cancelEdit(); // Annule l'édition en cours si on change de conversation
+    cancelEdit(); 
     
     if (activeChatTitle) activeChatTitle.textContent = conv.name || 'Discussion privée';
     if (activeChatStatus) activeChatStatus.textContent = "En ligne";
     if (activeChatAvatar) activeChatAvatar.src = conv.avatar;
     if (chatPanel) chatPanel.classList.remove("hidden");
 
-    // Nettoyage complet des anciens états actifs
     document.querySelectorAll(".conversation-item").forEach(item => {
         item.classList.remove("bg-blue-50", "text-blue-600", "dark:bg-slate-800", "dark:text-white");
         item.classList.add("text-slate-600", "dark:text-slate-300");
@@ -310,7 +314,7 @@ async function selectConversation(conv) {
         }
     });
     
-    // Ajout du style actif intelligent (Bleu en clair, Ardoise en sombre)
+
     const selectedElement = document.querySelector(`[data-conversation-id="${conv.targetUserId}"]`);
     if (selectedElement) {       
         selectedElement.classList.remove("text-slate-600", "dark:text-slate-300");
@@ -323,11 +327,12 @@ async function selectConversation(conv) {
         }
     }
 
-    // Charger les messages immédiatement
     await loadMessages(conv.id);
     showChatColumn();
 
+
     // Rafraîchissement automatique toutes les 4 secondes (Polling)
+    
     if (messageInterval) clearInterval(messageInterval);
     messageInterval = setInterval(() => {
         if (activeConversationId) {
@@ -391,18 +396,15 @@ function renderMessages(messagesData) {
         const messageBlock = document.createElement("div");
         messageBlock.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'} mb-2 group`;
 
-        // Rendu conditionnel des boutons d'actions (✏️ et 🗑️) sécurisés
         messageBlock.innerHTML = `
             <div class="flex items-center space-x-2">
                 ${msgId ? `
                     <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition">
                         ${isMe ? `
-                            <!-- Bouton Modifier (uniquement pour mes messages) -->
                             <button onclick="startEditMessage('${msgId}', this)" class="text-gray-400 hover:text-blue-500 transition text-xs p-1" title="Modifier">
                                 ✏️
                             </button>
                         ` : ''}
-                        <!-- Bouton Supprimer (affiché pour tous, soumis aux règles d'accès de l'API) -->
                         <button onclick="deleteMessage('${msgId}')" class="text-gray-400 hover:text-red-500 transition text-xs p-1" title="Supprimer">
                             🗑️
                         </button>
@@ -419,7 +421,6 @@ function renderMessages(messagesData) {
         messagesContainer.appendChild(messageBlock);
     });
 
-    // Auto-scroll uniquement si l'utilisateur était déjà en bas
     if (isAtBottom) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -449,14 +450,12 @@ function cancelEdit() {
     }
 }
 
-// Annulation de la saisie via la touche Échap
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && editingMessageId !== null) {
         cancelEdit();
     }
 });
 
-// Envoi ou modification du message
 if (messageForm) {
     messageForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -467,7 +466,6 @@ if (messageForm) {
         messageInput.value = "";
 
         if (editingMessageId !== null) {
-            // --- ACTION : MODIFIER LE MESSAGE ---
             try {
                 const response = await fetch(`${API_URL}/messages/${editingMessageId}`, {
                     method: "PATCH",
@@ -491,7 +489,6 @@ if (messageForm) {
                 showToast("Erreur de connexion au serveur.", "error");
             }
         } else {
-            // --- ACTION : ENVOYER UN NOUVEAU MESSAGE ---
             try {
                 const response = await fetch(`${API_URL}/conversations/${activeConversationId}/messages`, {
                     method: "POST",
@@ -658,7 +655,11 @@ async function deleteConversation(conversationId) {
         if (response.ok) {
             showToast("Conversation supprimée.", "success");
             activeConversationId = null;
+<<<<<<< HEAD
             if (messageInterval) clearInterval(messageInterval);
+=======
+            if (messageInterval) clearInterval(messageInterval); 
+>>>>>>> develop
             if (chatPanel) chatPanel.classList.add("hidden");
             await loadUsers();
             showListColumn();
