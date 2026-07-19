@@ -8,6 +8,42 @@ const loginBtn = document.getElementById("login-btn");
 const loginSpinner = document.getElementById("login-spinner");
 const loginBtnText = document.getElementById("login-btn-text");
 
+// Initialisation des écouteurs au chargement du DOM
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ===================================================
+    // GESTION DE LA VISIBILITÉ DU MOT DE PASSE (Chrome-ready)
+    // ===================================================
+    const passwordInput = document.getElementById("password"); // ou "password-input" selon ton HTML
+    const togglePasswordBtn = document.getElementById("toggle-password-btn");
+    const togglePasswordIcon = document.getElementById("toggle-password-icon");
+
+    if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener("click", (e) => {
+            // Empêche Chrome d'avoir un comportement natif imprévu
+            e.preventDefault(); 
+            
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                if (togglePasswordIcon) {
+                    togglePasswordIcon.setAttribute("data-lucide", "eye-off");
+                }
+            } else {
+                passwordInput.type = "password";
+                if (togglePasswordIcon) {
+                    togglePasswordIcon.setAttribute("data-lucide", "eye");
+                }
+            }
+            
+            // Force Lucide à re-générer la bonne icône à la volée
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    }
+});
+
+// Gestion de la soumission du formulaire
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -64,17 +100,17 @@ if (loginForm) {
                 
                 if (userToken) localStorage.setItem("token", userToken);
                 if (userId) localStorage.setItem("userId", userId);
-            showToast("Connexion réussie ! Redirection...", "success");
-            setTimeout(() => {    
-                window.location.href = "chat.html";
-            } , 1000);
+                
+                showToast("Connexion réussie ! Redirection...", "success");
+                setTimeout(() => {    
+                    window.location.href = "chat.html";
+                }, 1000);
             } else {
                 showToast(result.message || "Identifiants incorrects.", "error");
                 resetLoginButton();
             }
 
         } catch (error) {
-            // Déplie ce message dans ta console pour voir la cause exacte du crash !
             console.error("Détail de l'erreur de connexion :", error);
             showToast(error.message || "Impossible de joindre le serveur.", "error");
             resetLoginButton();
@@ -140,6 +176,6 @@ function showToast(message, type = "success") {
         toast.classList.add("translate-y-2", "opacity-0");
         setTimeout(() => {
             toast.remove();
-        }, 300); // Temps de la transition de disparition
+        }, 300);
     }, 4000);
 }
