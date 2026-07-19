@@ -125,28 +125,20 @@
         </div>
 
         <!-- Formulaire d'envoi de message -->
-         <div class="w-full bg-slate-900 border-t border-slate-800 p-4 pb-6 pb-safe md:pb-4">
-            <form id="message-form" class="flex-1 overflow-y-auto space-y-4 p-4 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 transition-colors duration-300">
-                <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
-                    <i data-lucide="plus" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
-                        Cette fonctionnalité n'est pas disponible pour l'instant
-                    </span>
-                </button>
-                <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
-                    <i data-lucide="smile" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
-                        Cette fonctionnalité n'est pas disponible pour l'instant
-                    </span>
-                </button>
-                
-                <div class="flex-1 relative flex items-center">
-                    <input type="text" id="message-input" autocomplete="off" placeholder="Tapez votre message..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm pl-4 pr-12 py-3 rounded-2xl focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors">
-                    <button type="submit" id="send-btn" class="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition shadow-sm cursor-pointer">
-                        <i data-lucide="send-horizontal" class="w-4 h-4"></i>
+         <div class="w-full bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-6 md:pb-4">
+            <form id="message-form" class="flex items-center space-x-2">
+                <!-- Fond de l'input : gris clair en mode clair, ardoise en mode sombre -->
+                <div class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-800 rounded-2xl px-4 py-3 border border-slate-100 dark:border-0">
+                    <!-- Input texte adaptatif -->
+                    <input type="text" id="message-input" placeholder="Tapez votre message..." 
+                        class="w-full bg-transparent text-slate-800 dark:text-white outline-none text-sm pr-10 placeholder-slate-400">
+                    
+                    <button type="submit" class="absolute right-2 p-2 bg-blue-600 rounded-xl text-white hover:bg-blue-700 transition">
+                        <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
                 </div>
             </form>
+         </div>
         </div>
     </main>
 
