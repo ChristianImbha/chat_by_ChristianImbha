@@ -258,13 +258,17 @@ async function selectConversation(conv) {
     if (activeChatAvatar) activeChatAvatar.src = conv.avatar;
     if (chatPanel) chatPanel.classList.remove("hidden");
 
-    document.querySelectorAll(".conversation-item").forEach(el => {
-        if (el.dataset.conversationId === conv.id) {
-            el.classList.add("bg-slate-100");
-        } else {
-            el.classList.remove("bg-slate-100");
-        }
+    document.querySelectorAll(".conversation-item").forEach(item => {
+        item.classList.remove("bg-white", "bg-slate-800", "bg-white/10", "text-slate-900");
+        item.classList.add("text-slate-300");
     });
+    
+    if (selectedElement) {       
+        selectedElement.classList.add("bg-white/10");         
+        selectedElement.classList.remove("text-slate-300");
+        selectedElement.classList.add("text-white");
+    }
+}
 
     // Charger les messages immédiatement
     await loadMessages(conv.id);
