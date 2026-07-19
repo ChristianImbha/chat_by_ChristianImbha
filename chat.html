@@ -25,7 +25,7 @@
     }
     </script>
 </head>
-<body class="flex h-screen w-full bg-[#f4f6fa] dark:bg-slate-900 overflow-hidden font-sans antialiased text-slate-800 dark:text-slate-100 transition-colors duration-300">
+<body class="flex h-[100dvh] w-full bg-[#f4f6fa] dark:bg-slate-900 overflow-hidden font-sans antialiased text-slate-800 dark:text-slate-100 transition-colors duration-300">
     
     <!-- BARRE LATÉRALE : Masquée sur mobile, visible sur tablette/PC -->
     <aside class="hidden md:flex w-16 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex-col justify-between items-center py-4 shrink-0 transition-colors duration-300">
@@ -125,27 +125,29 @@
         </div>
 
         <!-- Formulaire d'envoi de message -->
-        <form id="message-form" class="p-4 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 transition-colors duration-300">
-             <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
-                <i data-lucide="plus" class="w-5 h-5 md:w-6 md:h-6"></i>
-                <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
-                    Cette fonctionnalité n'est pas disponible pour l'instant
-                </span>
-            </button>
-             <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
-                <i data-lucide="smile" class="w-5 h-5 md:w-6 md:h-6"></i>
-                <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
-                    Cette fonctionnalité n'est pas disponible pour l'instant
-                </span>
-            </button>
-            
-            <div class="flex-1 relative flex items-center">
-                <input type="text" id="message-input" autocomplete="off" placeholder="Tapez votre message..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm pl-4 pr-12 py-3 rounded-2xl focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors">
-                <button type="submit" id="send-btn" class="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition shadow-sm cursor-pointer">
-                    <i data-lucide="send-horizontal" class="w-4 h-4"></i>
+         <div class="w-full bg-slate-900 border-t border-slate-800 p-4 pb-6 pb-safe md:pb-4">
+            <form id="message-form" class="flex-1 overflow-y-auto space-y-4 p-4 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 transition-colors duration-300">
+                <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
+                    <i data-lucide="plus" class="w-5 h-5 md:w-6 md:h-6"></i>
+                    <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
+                        Cette fonctionnalité n'est pas disponible pour l'instant
+                    </span>
                 </button>
-            </div>
-        </form>
+                <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
+                    <i data-lucide="smile" class="w-5 h-5 md:w-6 md:h-6"></i>
+                    <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
+                        Cette fonctionnalité n'est pas disponible pour l'instant
+                    </span>
+                </button>
+                
+                <div class="flex-1 relative flex items-center">
+                    <input type="text" id="message-input" autocomplete="off" placeholder="Tapez votre message..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm pl-4 pr-12 py-3 rounded-2xl focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors">
+                    <button type="submit" id="send-btn" class="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition shadow-sm cursor-pointer">
+                        <i data-lucide="send-horizontal" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
     </main>
 
     <script>
