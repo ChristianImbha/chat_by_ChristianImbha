@@ -655,11 +655,9 @@ async function deleteConversation(conversationId) {
         if (response.ok) {
             showToast("Conversation supprimée.", "success");
             activeConversationId = null;
-<<<<<<< HEAD
-            if (messageInterval) clearInterval(messageInterval);
-=======
+
             if (messageInterval) clearInterval(messageInterval); 
->>>>>>> develop
+
             if (chatPanel) chatPanel.classList.add("hidden");
             await loadUsers();
             showListColumn();
@@ -693,8 +691,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (myName) {
         myName.textContent = cachedName;
     }
-    // -------------------------------------------------------------------
-
+   
     if (deleteConvBtn) {
         deleteConvBtn.addEventListener("click", () => {
             if (activeConversationId) {
