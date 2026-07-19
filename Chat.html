@@ -9,15 +9,13 @@
         tailwind.config = {
             darkMode: 'class' 
         }
-    </script>
-    <!-- Tu peux retirer ce script browser@4 si tu utilises déjà le cdn tailwindcss normal juste au-dessus -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> 
+    </script>    
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
     <script>
-    // Ce code s'exécute immédiatement avant le rendu de la page
+    // Gestion mode de themes
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
     } else {
@@ -67,7 +65,6 @@
     <section id="col-left" class="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 h-full transition-colors duration-300">
         
         <!-- En-tête Profil-->
-        <!-- Modifié pour devenir un bouton cliquable vers la page profil (à toi de vérifier si tu l'ouvres via js ou lien html) -->
         <a href="profil.html" id="my-profile-trigger" class="p-4 flex flex-col justify-between items-center border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition rounded-t-2xl">
             <div class="flex items-center gap-3 w-full">
                 <div class="relative shrink-0">
@@ -90,7 +87,7 @@
 
         <!-- Liste des conversations -->
         <div id="rooms-list" class="flex-1 overflow-y-auto space-y-1 px-2 pb-4">
-            <!-- Les conversations s'injectent ici automatiquement -->
+            <!-- injection automatique des conversations s' -->
         </div>
     </section>
 
@@ -115,12 +112,19 @@
                     <p id="active-chat-status" class="text-xs text-slate-400 dark:text-slate-500">Hors ligne</p>
                 </div>
             </div>
+
+            <!-- BOUTON  : Supprimer la discussion -->
+            <div>
+                <button id="delete-conv-btn" class="p-2.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition duration-200 cursor-pointer" title="Supprimer la conversation">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </button>
+            </div>
         </header>
 
         <!-- Conteneur des messages -->
         <div id="messages-container" class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col">
             <div class="text-center text-slate-400 dark:text-slate-500 text-sm my-auto">
-                Cliquez sur une conversation à gauche pour commencer à discuter.
+                Cliquez sur une conversation à gauche pour commencer à ddiscuter.
             </div>
         </div>
 
