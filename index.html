@@ -11,7 +11,7 @@
     } else {
         document.documentElement.classList.remove('dark');
     }
-</script>
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,8 +25,8 @@
     
     <header class="flex flex-col items-center text-center mb-6">
         <div class="text-blue-600 p-2 rounded-xl bg-blue-50">
-                <i data-lucide="message-square" class="w-6 h-6"></i>
-            </div>
+            <i data-lucide="message-square" class="w-6 h-6"></i>
+        </div>
         <h1 class="text-2xl font-bold text-blue-600 tracking-tight mt-2">Welcome back</h1>
     </header>
 
@@ -39,6 +39,7 @@
 
             <form id="login-form" class="space-y-4">
                 
+                <!-- Champ Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-slate-600 mb-1.5">Email Address</label>
                     <div class="relative rounded-xl">
@@ -50,6 +51,7 @@
                     </div>
                 </div>
 
+                <!-- Champ Mot de passe (CORRIGÉ ET SÉCURISÉ) -->
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <label for="password" class="block text-sm font-medium text-slate-600">Password</label>
@@ -59,12 +61,21 @@
                             </a>
                         </div>
                     </div> 
-                    <div class="relative flex items-center">
-                        <!-- Champ Password -->
-                        <input type="password" id="password-input" placeholder="••••••••" class="w-full ... pr-10">
+                    
+                    <!-- Le conteneur relatif -->
+                    <div class="relative flex items-center group">
+                        <!-- Icône Cadenas à gauche pour correspondre au design de l'email -->
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-slate-400"></i>
+                        </div>
                         
-                        <!-- Bouton pour afficher/masquer -->
-                        <button type="button" id="toggle-password-btn" class="absolute right-3 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                        <!-- L'input avec l'ID 'password' et le padding à droite pr-12 pour laisser place à l'oeil -->
+                        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password"
+                               class="block w-full pl-11 pr-12 py-3 bg-[#eff4ff] border-0 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none text-sm">
+                        
+                        <!-- Le bouton œil isolé et forcé au premier plan (z-10) -->
+                        <button type="button" id="toggle-password-btn" 
+                                class="absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center text-slate-400 hover:text-blue-600 transition-colors z-10 cursor-pointer focus:outline-none">
                             <i id="toggle-password-icon" data-lucide="eye" class="w-5 h-5"></i>
                         </button>
                     </div>
@@ -80,9 +91,7 @@
 
                 <div class="pt-2">
                     <button type="submit" id="login-btn" class="w-full flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 disabled:opacity-75 disabled:cursor-not-allowed">
-                        <!-- Ce span contient notre spinner Tailwind, masqué par défaut avec 'hidden' -->
                         <span id="login-spinner" class="hidden w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        <!-- Ce span contient le texte du bouton -->
                         <span id="login-btn-text">Se connecter</span>
                     </button>
                 </div>   
@@ -96,6 +105,7 @@
     </main>
 
     <script>
+        // Initialisation de Lucide au démarrage
         lucide.createIcons();
     </script>
 

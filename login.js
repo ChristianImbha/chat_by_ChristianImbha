@@ -12,16 +12,17 @@ const loginBtnText = document.getElementById("login-btn-text");
 document.addEventListener("DOMContentLoaded", () => {
     
     // ===================================================
-    // GESTION DE LA VISIBILITÉ DU MOT DE PASSE (Chrome-ready)
+    // GESTION DE LA VISIBILITÉ DU MOT DE PASSE (Chrome-proof)
     // ===================================================
-    const passwordInput = document.getElementById("password"); // ou "password-input" selon ton HTML
+    const passwordInput = document.getElementById("password"); // Aligné avec l'ID du nouveau HTML
     const togglePasswordBtn = document.getElementById("toggle-password-btn");
     const togglePasswordIcon = document.getElementById("toggle-password-icon");
 
     if (togglePasswordBtn && passwordInput) {
         togglePasswordBtn.addEventListener("click", (e) => {
-            // Empêche Chrome d'avoir un comportement natif imprévu
+            // Empêche Chrome d'activer son comportement natif d'autocomplétion au clic
             e.preventDefault(); 
+            e.stopPropagation(); // Bloque la propagation pour éviter les conflits d'interface sur Chrome
             
             if (passwordInput.type === "password") {
                 passwordInput.type = "text";
