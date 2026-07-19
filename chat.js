@@ -205,8 +205,8 @@ function renderUsersList(users) {
         userElement.innerHTML = `
             <img src="${displayAvatar}" class="w-10 h-10 rounded-full object-cover" alt="Avatar">
             <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-semibold text-gray-800 truncate">${user.fullName || 'Utilisateur'}</h3>
-                <p class="text-xs text-green-500 truncate">Cliquez pour discuter</p>
+                <h3 class="text-sm font-semibold text-white-800 truncate">${user.fullName || 'Utilisateur'}</h3>
+                <p class="text-xs text-blue-500 truncate">Cliquez pour discuter</p>
             </div>
         `;
 
@@ -270,7 +270,7 @@ async function selectConversation(conv) {
     await loadMessages(conv.id);
     showChatColumn();
 
-    // Mettre en place un rafraîchissement automatique toutes les 4 secondes (Polling)
+    // rafraîchissement automatique toutes les 4 secondes (Polling)
     if (messageInterval) clearInterval(messageInterval);
     messageInterval = setInterval(() => {
         if (activeConversationId) {
