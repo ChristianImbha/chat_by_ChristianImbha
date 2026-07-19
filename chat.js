@@ -570,7 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileTrigger = document.getElementById("my-profile-trigger");
     if (profileTrigger) {
         profileTrigger.addEventListener("click", () => {
-            window.location.href = "Profil.html"; 
+            window.location.href = "profil.html"; 
         });
     }
 
