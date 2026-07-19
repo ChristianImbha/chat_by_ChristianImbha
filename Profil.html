@@ -82,11 +82,17 @@
         <header class="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center flex-shrink-0 transition-colors duration-300">
             <h1 class="text-blue-600 dark:text-blue-500 font-bold text-xl">Kadea Chat</h1>
             <div class="flex items-center gap-4 text-slate-600 dark:text-slate-400">
-                <button type="button" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition">
-                    <i data-lucide="video" class="w-5 h-5"></i>
+                <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
+                    <i data-lucide="video" class="w-5 h-5 md:w-6 md:h-6"></i>
+                    <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
+                        Cette fonctionnalité n'est pas disponible pour l'instant
+                    </span>
                 </button>
-                <button type="button" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition">
-                    <i data-lucide="phone" class="w-5 h-5"></i>
+                <button class="group relative p-2.5 md:p-3 text-slate-400 cursor-not-allowed rounded-xl transition flex items-center justify-center hidden sm:flex">
+                    <i data-lucide="phone" class="w-5 h-5 md:w-6 md:h-6"></i>
+                    <span class="absolute left-16 md:left-20 bg-slate-800 text-white text-[11px] font-medium px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
+                        Cette fonctionnalité n'est pas disponible pour l'instant
+                    </span>
                 </button>
                 <button type="button" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition">
                     <i data-lucide="more-vertical" class="w-5 h-5"></i>

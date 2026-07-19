@@ -197,14 +197,16 @@ function renderUsersList(users) {
     users.forEach(user => {
         const userElement = document.createElement("div");
         userElement.dataset.conversationId = user.id; 
-        userElement.className = `conversation-item flex items-center space-x-3 p-3 hover:bg-slate-800 cursor-pointer rounded-xl transition text-slate-300`;
+        // hover:bg-slate-100 en mode clair, hover:bg-slate-800 en mode sombre
+        userElement.className = `conversation-item flex items-center space-x-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer rounded-xl transition text-slate-600 dark:text-slate-300`;
         
         const displayAvatar = user.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`;
 
         userElement.innerHTML = `
             <img src="${displayAvatar}" class="w-10 h-10 rounded-full object-cover" alt="Avatar">
             <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-semibold text-slate-100 truncate">${user.fullName || 'Utilisateur'}</h3>
+                <!-- text-slate-800 en mode clair, dark:text-slate-100 en mode sombre -->
+                <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">${user.fullName || 'Utilisateur'}</h3>
                 <p class="text-xs text-blue-500 truncate">Cliquez pour discuter</p>
             </div>
         `;
@@ -258,17 +260,32 @@ async function selectConversation(conv) {
     if (activeChatAvatar) activeChatAvatar.src = conv.avatar;
     if (chatPanel) chatPanel.classList.remove("hidden");
 
-    // Nettoyage de l'état actif sur les conversations
+    // Nettoyage complet des anciens états actifs (on enlève tout pour éviter les conflits)
     document.querySelectorAll(".conversation-item").forEach(item => {
-        item.classList.remove("bg-white", "bg-slate-800", "bg-white/10", "text-white");
-        item.classList.add("text-slate-300");
+        item.classList.remove("bg-blue-50", "text-blue-600", "dark:bg-slate-800", "dark:text-white");
+        
+        // On remet les classes de base neutres
+        item.classList.add("text-slate-600", "dark:text-slate-300");
+        const title = item.querySelector("h3");
+        if (title) {
+            title.classList.remove("text-blue-600", "text-white");
+            title.classList.add("text-slate-800", "dark:text-slate-100");
+        }
     });
     
-    // Ajout du style actif sur le bon élément de la liste
+    // Ajout du style actif intelligent (Bleu en clair, Ardoise en sombre)
     const selectedElement = document.querySelector(`[data-conversation-id="${conv.targetUserId}"]`);
     if (selectedElement) {       
-        selectedElement.classList.add("bg-slate-800", "text-white");         
-        selectedElement.classList.remove("text-slate-300");
+        selectedElement.classList.remove("text-slate-600", "dark:text-slate-300");
+        // bg-blue-50 en mode clair / dark:bg-slate-800 en mode sombre
+        selectedElement.classList.add("bg-blue-50", "text-blue-600", "dark:bg-slate-800", "dark:text-white");         
+        
+        // On ajuste aussi la couleur du titre H3 pour qu'il soit bleu ou blanc
+        const title = selectedElement.querySelector("h3");
+        if (title) {
+            title.classList.remove("text-slate-800", "dark:text-slate-100");
+            title.classList.add("text-blue-600", "dark:text-white");
+        }
     }
 
     // Charger les messages immédiatement
