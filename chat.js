@@ -4,6 +4,20 @@
 const API_URL = "https://kadea-chat-api.onrender.com"; 
 const Workspace_API_KEY = 'wksp_c3e1fb2ba091b7e4a9697b611e1d7168';
 
+// Fonction de sécurité pour empêcher les failles XSS
+function escapeHTML(str) {
+    if (!str) return "";
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
+
 // Sécurisation de la page : Vérification immédiate du Token
 const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 if (!token) {
@@ -12,6 +26,7 @@ if (!token) {
 
 let activeConversationId = null;
 let messageInterval = null; // Permet de stocker le rafraîchissement automatique
+let editingMessageId = null; // Stocke l'ID du message en cours de modification (Ajouté)
 
 // Ciblage des éléments du DOM
 const myAvatar = document.getElementById("active-user-avatar"); 
@@ -261,6 +276,7 @@ async function handleStartChat(targetUserId, displayName, displayAvatar) {
 
 async function selectConversation(conv) {
     activeConversationId = conv.id;
+    cancelEdit(); // Annule l'édition en cours si on change de conversation
     
     if (activeChatTitle) activeChatTitle.textContent = conv.name || 'Discussion privée';
     if (activeChatStatus) activeChatStatus.textContent = "En ligne";
@@ -364,16 +380,26 @@ function renderMessages(messagesData) {
         const messageBlock = document.createElement("div");
         messageBlock.className = `flex w-full ${isMe ? 'justify-end' : 'justify-start'} mb-2 group`;
 
+        // Rendu conditionnel des boutons d'actions (✏️ et 🗑️) sécurisés
         messageBlock.innerHTML = `
             <div class="flex items-center space-x-2">
-                ${isMe && msgId ? `
-                    <button onclick="deleteMessage('${msgId}')" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition text-xs p-1" title="Supprimer">
-                        🗑️
-                    </button>
+                ${msgId ? `
+                    <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition">
+                        ${isMe ? `
+                            <!-- Bouton Modifier (uniquement pour mes messages) -->
+                            <button onclick="startEditMessage('${msgId}', this)" class="text-gray-400 hover:text-blue-500 transition text-xs p-1" title="Modifier">
+                                ✏️
+                            </button>
+                        ` : ''}
+                        <!-- Bouton Supprimer (affiché pour tous, soumis aux règles d'accès de l'API) -->
+                        <button onclick="deleteMessage('${msgId}')" class="text-gray-400 hover:text-red-500 transition text-xs p-1" title="Supprimer">
+                            🗑️
+                        </button>
+                    </div>
                 ` : ''}
                 <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'} max-w-xl text-sm rounded-2xl p-3 shadow-sm flex flex-col">
                     ${!isMe ? `<p class="font-bold text-xs text-blue-600 mb-0.5">${senderName || 'Utilisateur'}</p>` : ''}
-                    <p class="break-words">${msg.content || msg.text || ''}</p>
+                    <p class="break-words msg-text-content">${escapeHTML(msg.content || msg.text || '')}</p>
                     <span class="block text-right text-[10px] ${isMe ? 'text-blue-200' : 'text-gray-400'} mt-1">${formatTime(msg.createdAt)}</span>
                 </div>
             </div>
@@ -382,12 +408,45 @@ function renderMessages(messagesData) {
         messagesContainer.appendChild(messageBlock);
     });
 
-    // Auto-scroll uniquement si l'utilisateur était déjà en bas (évite de le couper s'il lit un ancien message)
+    // Auto-scroll uniquement si l'utilisateur était déjà en bas
     if (isAtBottom) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 }
 
+// ===================================================
+// LOGIQUE DE MODIFICATION DES MESSAGES
+// ===================================================
+function startEditMessage(messageId, buttonElement) {
+    editingMessageId = messageId;
+    
+    // Récupération intelligente et sécurisée du texte brut sans problème d'échappement
+    const messageContainer = buttonElement.closest('.group');
+    const textElement = messageContainer.querySelector('.msg-text-content');
+    
+    if (textElement) {
+        messageInput.value = textElement.textContent.trim();
+        messageInput.focus();
+        messageInput.placeholder = "Modification en cours... (Échap pour annuler)";
+    }
+}
+
+function cancelEdit() {
+    editingMessageId = null;
+    if (messageInput) {
+        messageInput.value = "";
+        messageInput.placeholder = "Tapez votre message...";
+    }
+}
+
+// Annulation de la saisie via la touche Échap
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && editingMessageId !== null) {
+        cancelEdit();
+    }
+});
+
+// Envoi ou modification du message
 if (messageForm) {
     messageForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -395,27 +454,56 @@ if (messageForm) {
         const content = messageInput.value.trim();
         if (!content || !activeConversationId) return;
 
+        // On efface le champ de saisie immédiatement pour une meilleure UX
         messageInput.value = "";
 
-        try {
-            const response = await fetch(`${API_URL}/conversations/${activeConversationId}/messages`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                    "x-api-key": Workspace_API_KEY
-                },
-                body: JSON.stringify({ content: content })
-            });
+        if (editingMessageId !== null) {
+            // --- ACTION : MODIFIER LE MESSAGE ---
+            try {
+                const response = await fetch(`${API_URL}/messages/${editingMessageId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        "x-api-key": Workspace_API_KEY
+                    },
+                    body: JSON.stringify({ content: content })
+                });
 
-            if (response.ok) {
-                await loadMessages(activeConversationId);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Force le scroll après envoi
-            } else {
-                alert("Erreur lors de l'envoi du message.");
+                if (response.ok) {
+                    showToast("Message modifié avec succès !", "success");
+                    cancelEdit();
+                    await loadMessages(activeConversationId);
+                } else {
+                    showToast("Impossible de modifier ce message.", "error");
+                }
+            } catch (error) {
+                console.error("Erreur modification:", error);
+                showToast("Erreur de connexion au serveur.", "error");
             }
-        } catch (error) {
-            console.error("Erreur envoi:", error);
+        } else {
+            // --- ACTION : ENVOYER UN NOUVEAU MESSAGE ---
+            try {
+                const response = await fetch(`${API_URL}/conversations/${activeConversationId}/messages`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        "x-api-key": Workspace_API_KEY
+                    },
+                    body: JSON.stringify({ content: content })
+                });
+
+                if (response.ok) {
+                    await loadMessages(activeConversationId);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight; // Force le scroll après envoi
+                } else {
+                    showToast("Erreur lors de l'envoi du message.", "error");
+                }
+            } catch (error) {
+                console.error("Erreur envoi:", error);
+                showToast("Erreur de connexion.", "error");
+            }
         }
     });
 }
@@ -473,7 +561,7 @@ async function deleteMessage(messageId) {
             showToast("Message supprimé avec succès !", "success");
             await loadMessages(activeConversationId);
         } else {
-            showToast("Impossible de supprimer ce message.", "error");
+            showToast("Impossible de supprimer ce message (Droits insuffisants).", "error");
         }
     } catch (error) {
         console.error("Erreur lors de la suppression du message :", error);
@@ -581,7 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ÉCOUTEUR SUR LE BOUTON DE SUPPRESSION
+    // ÉCOUTEUR SUR LE BOUTON DE SUPPRESSION DE LA DISCUSSION (Active le lien HTML-JS)
     if (deleteConvBtn) {
         deleteConvBtn.addEventListener("click", () => {
             if (activeConversationId) {
